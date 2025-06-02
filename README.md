@@ -2,7 +2,6 @@
 
 **MailStorm Neo** is an advanced, locally-hosted email toolkit built with Flask and a Neobrutalist UI. It's designed for composing, sending individual emails, managing bulk email campaigns with AI assistance, and includes several productivity tools for email-related tasks.
 
-![MailStorm Neo Screenshot (Example - actual UI may vary slightly)](https://raw.githubusercontent.com/your-username/mailstorm-neo/main/screenshot.png)
 *(You'll need to add a screenshot.png to your repository for this image to display)*
 
 ## Key Features
