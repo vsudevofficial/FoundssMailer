@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foundss Mail Dashboard - NeoPro (No History - No AI Writer)</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+    <style>
+        /* --- Neobrutalist Design Pro CSS (No History) --- */
+        :root {
+            --neo-bg-main: #FFFFFF;
+            --neo-bg-alt: #F7F7F7; 
+            --neo-bg-body: #E8E8E8; 
+            --neo-bg-sidebar: #F0F4F8;
+            
+            --neo-text-primary: #000000;
+            --neo-text-secondary: #333333;
+            --neo-text-tertiary: #666666;
+            --neo-text-on-accent: #000000;
+            --neo-text-on-accent-light: #FFFFFF;
+
+            --neo-border-color: #000000;
+            --neo-border-thickness: 2.5px;
+            --neo-border-radius-sm: 5px;
+            --neo-border-radius-md: 8px;
+            --neo-border-radius-none: 0px;
+
+            --neo-accent-yellow: #FFDE03;
+            --neo-accent-blue: #007BFF;
+            --neo-accent-pink: #E83E8C;
+            --neo-accent-green: #28A745;
+            --neo-accent-red: #DC3545;
+            --neo-accent-purple: #6F42C1;
+            --neo-accent-orange: #FD7E14;
+            --neo-accent-teal: #20C997; 
+            --neo-accent-cyan: #17A2B8; 
+
+            --neo-shadow-offset: 5px;
+            --neo-shadow: var(--neo-shadow-offset) var(--neo-shadow-offset) 0px var(--neo-border-color);
+            --neo-shadow-hover-intensity: 2px;
+            --neo-shadow-small-offset: 3px;
+            --neo-shadow-small: var(--neo-shadow-small-offset) var(--neo-shadow-small-offset) 0px var(--neo-border-color);
+
+            --neo-font-primary: 'Inter', sans-serif;
+            --neo-spacing-unit: 24px;
+            --neo-section-padding: calc(var(--neo-spacing-unit) * 1.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--neo-font-primary); background-color: var(--neo-bg-body);
+            color: var(--neo-text-primary); line-height: 1.6; font-weight: 400;
+            display: flex; min-height: 100vh; overflow: hidden; 
+        }
+        
+        #startup-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--neo-bg-body); display: flex; 
+            justify-content: center; align-items: center;
+            z-index: 20000; padding: 20px; text-align: center;
+        }
+        .startup-content {
+            background-color: var(--neo-bg-main);
+            padding: calc(var(--neo-section-padding) * 1.5);
+            border: var(--neo-border-thickness) solid var(--neo-border-color);
+            box-shadow: var(--neo-shadow-offset) var(--neo-shadow-offset) 0px var(--neo-accent-blue);
+            border-radius: var(--neo-border-radius-md); max-width: 500px;
+        }
+        .startup-content h1 .app-icon, .startup-content h2 .app-icon { font-size: 1.5em; margin-right: 10px; }
+        .startup-content h1 { font-size: 1.8em; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; }
+        .startup-content p { margin-bottom: 20px; color: var(--neo-text-secondary); font-size: 1em; }
+        .startup-content .neo-button { margin-top: 10px; }
+        #initial-loader .spinner {
+             width: 40px; height: 40px; border-top-color: var(--neo-accent-blue); margin-top: 20px; display: inline-block;
+        }
+
+        .neo-dashboard-container {
+            display: none; flex-grow: 1; background-color: var(--neo-bg-main);
+            border: var(--neo-border-thickness) solid var(--neo-border-color);
+            box-shadow: var(--neo-shadow-offset) var(--neo-shadow-offset) 0px var(--neo-accent-blue);
+            margin: var(--neo-spacing-unit); border-radius: var(--neo-border-radius-md);
+            overflow: hidden;
+        }
+        .neo-dashboard-container.visible { display: flex; }
+
+        .neo-sidebar-left {
+            width: 270px; background-color: var(--neo-bg-sidebar);
+            border-right: var(--neo-border-thickness) solid var(--neo-border-color);
+            padding: var(--neo-spacing-unit); display: flex; flex-direction: column;
+            flex-shrink: 0; transition: width 0.3s ease;
+        }
+        .neo-sidebar-header h2 {
+            font-size: 1.7em; font-weight: 800; color: var(--neo-text-primary); text-align: center;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .neo-sidebar-header h2 .app-icon { font-size: 1.3em; }
+        .neo-sidebar-header p { font-size: 0.8em; color: var(--neo-text-secondary); text-align: center; margin-top: 5px; font-weight: 500;}
+        .neo-sidebar-nav { display: flex; flex-direction: column; gap: 10px; }
+        .nav-group-title {
+            font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--neo-text-tertiary); font-weight: 700;
+            margin-top: var(--neo-spacing-unit); margin-bottom: 8px; padding-left: 5px;
+        }
+        .neo-nav-button {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 14px; font-size: 0.95em; font-weight: 600;
+            color: var(--neo-text-primary); background-color: var(--neo-bg-main);
+            border: var(--neo-border-thickness) solid var(--neo-border-color);
+            box-shadow: var(--neo-shadow-small); text-align: left; cursor: pointer;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease, color 0.15s ease, filter 0.15s ease;
+            border-radius: var(--neo-border-radius-sm);
+        }
+        .neo-nav-button .neo-nav-icon { font-size: 1.1em; min-width: 22px; text-align: center; }
+        .neo-nav-button:hover:not(.active) { 
+            background-color: var(--neo-accent-yellow); color: var(--neo-text-on-accent);
+            transform: translate(var(--neo-shadow-hover-intensity), var(--neo-shadow-hover-intensity));
+            box-shadow: calc(var(--neo-shadow-small-offset) - var(--neo-shadow-hover-intensity)) 
+                        calc(var(--neo-shadow-small-offset) - var(--neo-shadow-hover-intensity)) 
+                        0px var(--neo-border-color);
+        }
+        .neo-nav-button.active {
+            color: var(--neo-text-on-accent-light); box-shadow: none;
+            transform: translate(var(--neo-shadow-small-offset), var(--neo-shadow-small-offset));
+        }
+        .neo-nav-button.active:hover { filter: brightness(0.92); color: var(--neo-text-on-accent-light); }
+        .neo-nav-button.active.compose-active { background-color: var(--neo-accent-blue); }
+        .neo-nav-button.active.recipients-active { background-color: var(--neo-accent-pink); }
+        .neo-nav-button.active.send-active { background-color: var(--neo-accent-green); }
+        .neo-nav-button.active.emailExtractor-active { background-color: var(--neo-accent-orange); }
+        .neo-nav-button.active.dorkGenerator-active { background-color: var(--neo-accent-purple); }
+        .neo-nav-button.active.howToUse-active { background-color: #78909C; }
+        
+        .neo-main-content-area {
+            flex-grow: 1; padding: var(--neo-spacing-unit); overflow-y: auto;
+            display: flex; flex-direction: column;
+            background-image: linear-gradient(45deg, var(--neo-bg-alt) 25%, transparent 25%), 
+                              linear-gradient(-45deg, var(--neo-bg-alt) 25%, transparent 25%),
+                              linear-gradient(45deg, transparent 75%, var(--neo-bg-alt) 75%),
+                              linear-gradient(-45deg, transparent 75%, var(--neo-bg-alt) 75%);
+            background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        .main-content-header {
+            margin-bottom: var(--neo-spacing-unit); background-color: var(--neo-bg-main);
+            padding: var(--neo-section-padding); margin: calc(-1 * var(--neo-spacing-unit));
+            margin-bottom: var(--neo-spacing-unit); border: var(--neo-border-thickness) solid var(--neo-border-color);
+            box-shadow: var(--neo-shadow); border-radius: var(--neo-border-radius-sm);
+        }
+        #current-section-title {
+            font-size: 1.8em; font-weight: 800; color: var(--neo-text-primary);
+            display: flex; align-items: center; gap: 12px;
+        }
+        #current-section-title .title-icon { font-size: 1.3em; } 
+        .neo-content-pane { display: none; flex-direction: column; gap: var(--neo-spacing-unit); flex-grow: 1; }
+        .neo-content-pane.active { display: flex; }
+
+        .neo-card, .form-section, .status-section, .recipients-section, .attachment-section, .tool-section, .how-to-use-section {
+            background-color: var(--neo-bg-main); border: var(--neo-border-thickness) solid var(--neo-border-color);
+            padding: var(--neo-section-padding); box-shadow: var(--neo-shadow);
+            border-radius: var(--neo-border-radius-md);
+        }
+        .neo-card h2, .form-section h2, .status-section h2, .recipients-section h2, .attachment-section h2, .tool-section h2, .how-to-use-section h2 {
+            font-size: 1.3em; font-weight: 700; margin-bottom: var(--neo-spacing-unit);
+            padding-bottom: 10px; border-bottom: var(--neo-border-thickness) dashed var(--neo-border-color);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .neo-card h2 .section-icon, .form-section h2 .section-icon { font-size: 1.2em; }
+
+        .form-row { display: grid; grid-template-columns: 1fr; gap: var(--neo-spacing-unit); }
+        @media (min-width: 768px) { .form-row { grid-template-columns: 1fr 1fr; } }
+        .input-group { position: relative; display: flex; flex-direction: column; }
+        .input-group label {
+            margin-bottom: 8px; font-size: 0.9em; color: var(--neo-text-primary); font-weight: 600;
+            display: flex; align-items: center; 
+        }
+        input[type="text"], input[type="email"], input[type="password"], textarea, .neo-select {
+            width: 100%; padding: 10px 14px; border: var(--neo-border-thickness) solid var(--neo-border-color);
+            border-radius: var(--neo-border-radius-sm); background-color: var(--neo-bg-main); color: var(--neo-text-primary);
+            font-size: 0.95em; font-family: var(--neo-font-primary);
+            box-shadow: inset 2px 2px 0px rgba(0,0,0,0.04); transition: all 0.2s ease;
+        }
+        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, textarea:focus, .neo-select:focus {
+            outline: none; border-color: var(--neo-accent-blue);
+            box-shadow: 0 0 0 var(--neo-border-thickness) var(--neo-accent-blue), 
+                        inset 2px 2px 0px rgba(0,0,0,0.08);
+        }
+        textarea { resize: vertical; min-height: 100px; max-height: 250px; }
+        .neo-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 20px; padding-right: 35px; }
+        
+        .tooltip {
+            position: relative; display: inline-block; margin-left: 8px; cursor: help;
+        }
+        .tooltip .tooltip-icon {
+            background-color: var(--neo-accent-yellow); color: var(--neo-text-on-accent);
+            border-radius: 50%; width: 22px; height: 22px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-weight: 700; border: 1.5px solid var(--neo-border-color);
+            box-shadow: 2px 2px 0px var(--neo-border-color); font-size: 0.9em;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .tooltip:hover .tooltip-icon, .tooltip:focus-within .tooltip-icon {
+             transform: translateY(-1px); box-shadow: 3px 3px 0px var(--neo-border-color);
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden; width: 280px; background-color: var(--neo-bg-main);
+            color: var(--neo-text-secondary); text-align: left; border-radius: var(--neo-border-radius-sm);
+            padding: 12px 15px; position: absolute; z-index: 10;
+            bottom: 135%; left: 50%; margin-left: -140px; 
+            opacity: 0; transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+            border: var(--neo-border-thickness) solid var(--neo-border-color);
+            box-shadow: var(--neo-shadow); font-size: 0.88em; line-height: 1.5;
+        }
+        .tooltip:hover .tooltiptext, .tooltip:focus-within .tooltiptext { visibility: visible; opacity: 1; }
+        .tooltip .tooltiptext::after { 
+            content: ""; position: absolute; top: 100%; left: 50%; margin-left: -6px;
+            border-width: 6px; border-style: solid; border-color: var(--neo-border-color) transparent transparent transparent;
+        }
+         .tooltip .tooltiptext::before { 
+            content: ""; position: absolute; top: calc(100% - 2px); left: 50%; margin-left: -4px;
+            border-width: 4px; border-style: solid; border-color: var(--neo-bg-main) transparent transparent transparent; z-index: 1;
+        }
+
+        .editor-wrapper {
+            border: var(--neo-border-thickness) solid var(--neo-border-color); background: var(--neo-bg-main);
+            box-shadow: var(--neo-shadow); overflow: hidden; display: flex; flex-direction: column;
+            border-radius: var(--neo-border-radius-md);
+        }
+        .editor-wrapper:focus-within { border-color: var(--neo-accent-blue); box-shadow: var(--neo-shadow-offset) var(--neo-shadow-offset) 0px var(--neo-accent-blue); }
+        #editor { height: 250px; font-family: var(--neo-font-primary); font-size: 1em; }
+        .ql-toolbar.ql-snow { border-bottom: var(--neo-border-thickness) solid var(--neo-border-color); background-color: var(--neo-bg-alt); padding: 8px; }
+        .ql-container.ql-snow { border: none; flex-grow: 1; }
+        .ql-editor { min-height: 180px; padding: 15px; color: var(--neo-text-primary); background-color: var(--neo-bg-main); }
+        .ql-snow .ql-toolbar button, .ql-snow .ql-toolbar .ql-picker-label { border: 1.5px solid transparent; margin: 1px; padding: 4px; border-radius: var(--neo-border-radius-sm); }
+        .ql-snow .ql-toolbar button:hover, .ql-snow .ql-toolbar .ql-picker-label:hover { background-color: var(--neo-accent-yellow); border-color: var(--neo-border-color); color: var(--neo-text-on-accent); }
+        .ql-snow .ql-toolbar button.ql-active, .ql-snow .ql-toolbar .ql-picker-label.ql-active { background-color: var(--neo-accent-blue); border-color: var(--neo-border-color); color: var(--neo-text-on-accent-light); }
+        .ql-snow .ql-tooltip { background-color: var(--neo-bg-main); border: var(--neo-border-thickness) solid var(--neo-border-color); color: var(--neo-text-primary); box-shadow: var(--neo-shadow); border-radius: var(--neo-border-radius-md); padding: 8px; }
+
+        .drop-zone { border: var(--neo-border-thickness) dashed var(--neo-border-color); padding: 30px; text-align: center; cursor: pointer; transition: all 0.2s ease; background: var(--neo-bg-alt); border-radius: var(--neo-border-radius-md); }
+        .drop-zone:hover, .drop-zone.dragover { border-color: var(--neo-accent-blue); background: #E3F2FD; border-style: solid; }
+        .drop-zone .drop-zone-content .drop-zone-icon { font-size: 2.8rem; margin-bottom: 8px; line-height: 1; color: var(--neo-accent-blue); }
+        .drop-zone .drop-zone-content h4 { margin-bottom: 5px; font-weight: 700; font-size: 1.05em;}
+        .drop-zone .drop-zone-content p { font-size: 0.85em; color: var(--neo-text-tertiary); }
+        
+        .attachment-list { margin-top: var(--neo-spacing-unit); }
+        .attachment-list .no-items-message,
+        .recipients-list-display .no-items-message {
+            color: var(--neo-text-tertiary); text-align: center;
+            margin-top: 20px; margin-bottom: 20px;
+            font-style: italic; padding: 10px; display: block;
+        }
+        .attachment-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--neo-bg-main); border: var(--neo-border-thickness) solid var(--neo-border-color); margin-bottom: 8px; box-shadow: var(--neo-shadow-small); border-radius: var(--neo-border-radius-sm); }
+        .file-icon { width: 35px; height: 35px; background: var(--neo-accent-yellow); color: var(--neo-text-on-accent); border: var(--neo-border-thickness) solid var(--neo-border-color); display: flex; align-items: center; justify-content: center; font-size: 0.8em; font-weight: 700; margin-right: 10px; border-radius: var(--neo-border-radius-sm); }
+        
+        .recipients-tabs { display: flex; margin-bottom: var(--neo-spacing-unit); border: var(--neo-border-thickness) solid var(--neo-border-color); background-color: var(--neo-bg-alt); border-radius: var(--neo-border-radius-sm); overflow: hidden; }
+        .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; border-right: var(--neo-border-thickness) solid var(--neo-border-color); cursor: pointer; font-weight: 700; transition: all 0.2s ease; color: var(--neo-text-primary); font-size: 0.9em; }
+        .tab-btn:last-child { border-right: none; }
+        .tab-btn.active { background: var(--neo-accent-pink); color: var(--neo-text-on-accent-light); }
+        .tab-btn:hover:not(.active) { background: var(--neo-accent-yellow); color: var(--neo-text-on-accent); }
+        .tab-content-inner { display: none; flex-grow: 1; flex-direction: column; gap: 15px; }
+        .tab-content-inner.active { display: flex; }
+        .recipients-list-display { margin-top: 15px; padding: 15px; background-color: var(--neo-bg-alt); border: var(--neo-border-thickness) solid var(--neo-border-color); min-height: 100px; max-height: 200px; overflow-y: auto; flex-grow: 1; border-radius: var(--neo-border-radius-sm); }
+        .recipients-list-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #CCC; font-size: 0.9em; }
+        
+        .email-count { 
+            background: var(--neo-accent-yellow); color: var(--neo-text-on-accent); 
+            padding: 8px 15px; border: var(--neo-border-thickness) solid var(--neo-border-color); 
+            box-shadow: var(--neo-shadow-small); font-weight: 700; display: inline-block; 
+            margin-top: var(--neo-spacing-unit); align-self: flex-start; 
+            border-radius: var(--neo-border-radius-sm); font-size: 0.95em;
+        }
+        .neo-button {
+            padding: 10px 20px; font-size: 0.95em; font-weight: 700;
+            border: var(--neo-border-thickness) solid var(--neo-border-color);
+            box-shadow: var(--neo-shadow); cursor: pointer; text-align: center;
+            transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease, filter 0.15s ease;
+            display: inline-flex; align-items: center; gap: 8px;
+            text-decoration: none; border-radius: var(--neo-border-radius-sm);
+        }
+        .neo-button:hover { transform: translate(var(--neo-shadow-hover-intensity), var(--neo-shadow-hover-intensity)); box-shadow: calc(var(--neo-shadow-offset) - var(--neo-shadow-hover-intensity)) calc(var(--neo-shadow-offset) - var(--neo-shadow-hover-intensity)) 0px var(--neo-border-color); filter: brightness(1.05); }
+        .neo-button:active { transform: translate(var(--neo-shadow-offset), var(--neo-shadow-offset)); box-shadow: none; filter: brightness(0.95); }
+        .neo-button:disabled { background-color: #BDBDBD !important; color: #757575 !important; border-color: #757575 !important; box-shadow: var(--neo-shadow-offset) var(--neo-shadow-offset) 0px #757575; cursor: not-allowed; transform: none; filter: none;}
+        .neo-button.neo-button-primary { background-color: var(--neo-accent-blue); color: var(--neo-text-on-accent-light); }
+        .neo-button.neo-button-primary:hover:not(:disabled) { background-color: #0056b3; }
+        .neo-button.neo-button-success { background-color: var(--neo-accent-green); color: var(--neo-text-on-accent-light); }
+        .neo-button.neo-button-success:hover:not(:disabled) { background-color: #1e7e34; }
+        .neo-button.neo-button-danger { background-color: var(--neo-accent-red); color: var(--neo-text-on-accent-light); }
+        .neo-button.neo-button-danger:hover:not(:disabled) { background-color: #bd2130; }
+        .neo-button.neo-button-warning { background-color: var(--neo-accent-yellow); color: var(--neo-text-on-accent); }
+        .neo-button.neo-button-warning:hover:not(:disabled) { background-color: #ffc107; }
+        .neo-button.neo-button-purple { background-color: var(--neo-accent-purple); color: var(--neo-text-on-accent-light); }
+        .neo-button.neo-button-purple:hover:not(:disabled) { background-color: #5a1e96; }
+        .neo-button.neo-button-orange { background-color: var(--neo-accent-orange); color: var(--neo-text-on-accent); }
+        .neo-button.neo-button-orange:hover:not(:disabled) { background-color: #e0620e; }
+        .neo-button.neo-button-teal { background-color: var(--neo-accent-teal); color: var(--neo-text-on-accent-light); }
+        .neo-button.neo-button-teal:hover:not(:disabled) { background-color: #138496; }
+        .neo-button.neo-button-cyan { background-color: var(--neo-accent-cyan); color: var(--neo-text-on-accent-light); }
+        .neo-button.neo-button-cyan:hover:not(:disabled) { background-color: #117a8b; }
+        .action-buttons { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--neo-spacing-unit); }
+        .remove-attachment, .remove-recipient-btn { padding: 5px 10px; font-size: 0.8em; font-weight: 600; }
+        
+        .status-message { font-size: 1.1em; text-align: center; font-weight: 700; margin-bottom: 10px; padding: 10px; border: var(--neo-border-thickness) solid var(--neo-border-color); background-color: var(--neo-bg-alt); border-radius: var(--neo-border-radius-md); }
+        .status-message.info { color: var(--neo-accent-blue); border-color: var(--neo-accent-blue); background-color: #E3F2FD;}
+        .status-message.error { color: var(--neo-accent-red); border-color: var(--neo-accent-red); background-color: #FFEBEE; }
+        .status-message.success { color: var(--neo-accent-green); border-color: var(--neo-accent-green); background-color: #E8F5E9;}
+        .progress-bar-container { width: 100%; background-color: var(--neo-bg-alt); border: var(--neo-border-thickness) solid var(--neo-border-color); height: 26px; overflow: hidden; border-radius: var(--neo-border-radius-md); }
+        .progress-bar { height: 100%; width: 0%; background-color: var(--neo-accent-green); transition: width 0.4s ease-in-out; display: flex; align-items: center; justify-content: center; color: var(--neo-text-on-accent-light); font-weight: 600; font-size: 0.85em; }
+        .results-log { background-color: #263238; color: #ECEFF1; padding: 15px; border: var(--neo-border-thickness) solid var(--neo-border-color); font-family: 'Courier New', Courier, monospace; font-size: 0.85em; white-space: pre-wrap; flex-grow: 1; overflow-y: auto; min-height: 150px; line-height: 1.5; box-shadow: inset 2px 2px 0px rgba(0,0,0,0.2); border-radius: var(--neo-border-radius-md); }
+        .results-log .success { color: #A5D6A7; } .results-log .error { color: #EF9A9A; } .results-log .info { color: #90CAF9; } .results-log .warning { color: #FFD54F; } /* Added warning color for log */
+        .summary-message { font-size: 1em; color: var(--neo-text-primary); text-align: center; font-weight: 600; padding: 12px; border: var(--neo-border-thickness) solid var(--neo-border-color); margin-top: 10px; background-color: var(--neo-bg-alt); border-radius: var(--neo-border-radius-md); }
+        
+        /* Tool, HowTo Sections */
+        .tool-section { margin-bottom: var(--neo-spacing-unit); }
+        .tool-section .input-area, .tool-section .output-area {
+            margin-bottom: var(--neo-spacing-unit);
+        }
+        .tool-section .area-header {
+            font-weight: 700;
+            font-size: 1.05em;
+            color: var(--neo-text-primary);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: var(--neo-border-thickness) dashed var(--neo-bg-alt); /* Softer dash */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tool-section .area-header .count-badge {
+            font-size: 0.85em;
+            font-weight: 700;
+            background-color: var(--neo-accent-yellow);
+            color: var(--neo-text-on-accent);
+            padding: 4px 10px;
+            border-radius: var(--neo-border-radius-sm);
+            border: 1.5px solid var(--neo-border-color);
+            box-shadow: var(--neo-shadow-small-offset) var(--neo-shadow-small-offset) 0px var(--neo-border-color);
+            margin-left: 10px;
+        }
+
+        .dork-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 5px; /* Reduced top margin as header provides spacing */ }
+        
+        #generatedDorkOutput, #extractedEmailsOutput {
+            background-color: var(--neo-bg-alt); 
+            border: var(--neo-border-thickness) solid var(--neo-border-color);
+            padding: 15px; min-height: 100px; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            white-space: pre-wrap; word-break: break-all; font-size: 0.9em;
+            border-radius: var(--neo-border-radius-sm); 
+            /* margin-top: 5px; No longer needed due to .area-header */
+            line-height: 1.6; color: var(--neo-text-secondary); position: relative;
+            box-shadow: inset 2px 2px 3px rgba(0,0,0,0.06); /* Subtle inset shadow */
+        }
+
+        .output-actions { display: flex; justify-content: flex-end; margin-top: 10px; gap: 8px; }
+        .copy-button {
+            font-size: 0.8em !important; padding: 6px 12px !important;
+            background-color: var(--neo-accent-teal); color: var(--neo-text-on-accent-light);
+        }
+        .copy-button:hover:not(:disabled) { background-color: #117964; } 
+        .copy-button.copied { background-color: var(--neo-accent-green) !important; }
+        
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(0,0,0,.1); border-radius: 50%; border-top-color: var(--neo-accent-blue); animation: spin 1s ease-in-out infinite; margin-left: 10px; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .how-to-use-section p, .how-to-use-section li { margin-bottom: 12px; line-height: 1.75; font-size: 0.95em; color: var(--neo-text-secondary);}
+        .how-to-use-section h3 { font-size: 1.1em; margin-top: var(--neo-spacing-unit); margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 8px; }
+        .how-to-use-section h3 .section-icon { font-size: 1.1em; color: var(--neo-accent-teal); }
+        .how-to-use-section ul, .how-to-use-section ol { margin-left: 25px; margin-bottom: 15px; }
+        .how-to-use-section strong { font-weight: 600; color: var(--neo-text-primary); }
+        .how-to-use-section code { background-color: var(--neo-bg-alt); padding: 2px 6px; border: 1px solid #ccc; border-radius: var(--neo-border-radius-sm); font-family: Consolas, Menlo, Monaco, Courier, monospace; font-size: 0.85em; color: var(--neo-accent-red); }
+        .how-to-use-section pre { background-color: #263238; color: #ECEFF1; padding: 15px; border: var(--neo-border-thickness) solid var(--neo-border-color); border-radius: var(--neo-border-radius-md); overflow-x: auto; margin-bottom: 15px; font-family: Consolas, Menlo, Monaco, Courier, monospace; font-size: 0.85em; }
+        .how-to-use-section .highlight { background-color: var(--neo-accent-yellow); padding: 1px 5px; border-radius: var(--neo-border-radius-sm); border: 1px solid var(--neo-border-color); font-weight: 600; }
+        .how-to-use-section a.neo-link { color: var(--neo-accent-blue); text-decoration: none; font-weight: 600; border-bottom: 2px solid transparent; transition: border-color 0.2s; }
+        .how-to-use-section a.neo-link:hover { border-bottom-color: var(--neo-accent-blue); }
+
+        #neo-toast-container {
+            position: fixed; bottom: 20px; right: 20px; z-index: 10000; 
+            display: flex; flex-direction: column; gap: 10px; max-width: 320px;
+        }
+        .neo-toast {
+            padding: 12px 20px; border-radius: var(--neo-border-radius-sm);
+            border: var(--neo-border-thickness) solid var(--neo-border-color);
+            box-shadow: var(--neo-shadow); font-weight: 600; font-size: 0.9em;
+            opacity: 0; transform: translateX(calc(100% + 20px)); 
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            color: var(--neo-text-on-accent-light); 
+        }
+        .neo-toast.show { opacity: 1; transform: translateX(0); }
+        .neo-toast.success { background-color: var(--neo-accent-green); }
+        .neo-toast.info { background-color: var(--neo-accent-blue); }
+        .neo-toast.warning { background-color: var(--neo-accent-yellow); color: var(--neo-text-on-accent); }
+        .neo-toast.error { background-color: var(--neo-accent-red); }
+
+        @media (max-width: 1024px) {
+            .neo-dashboard-container.visible { flex-direction: column; } 
+            .neo-dashboard-container { margin: 10px; }
+            .neo-sidebar-left { width: 100%; border-right: none; border-bottom: var(--neo-border-thickness) solid var(--neo-border-color); padding: var(--neo-spacing-unit); box-shadow: var(--neo-shadow-offset) var(--neo-shadow-offset) 0px var(--neo-accent-blue); }
+            .neo-sidebar-nav { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+            .neo-nav-button { flex-grow: 1; min-width: 150px; justify-content: center; }
+            .nav-group-title { width: 100%; text-align: center; padding-left: 0; margin-top: 15px; }
+            .neo-main-content-area { padding: var(--neo-spacing-unit); min-height: 500px; }
+            .main-content-header { margin: calc(-1 * var(--neo-spacing-unit)) calc(-1 * var(--neo-spacing-unit)) var(--neo-spacing-unit) calc(-1 * var(--neo-spacing-unit)); padding: var(--neo-section-padding);}
+            #current-section-title { font-size: 1.5em; }
+        }
+        @media (max-width: 768px) {
+            .neo-dashboard-container { margin: 5px; border-width: 2px; }
+            .neo-sidebar-left { padding: 15px; }
+            .neo-nav-button { font-size: 0.9em; padding: 8px 10px; flex-basis: calc(50% - 5px); }
+            .nav-group-title { font-size: 0.7em; }
+            .main-content-header { padding: 15px; }
+            #current-section-title { font-size: 1.3em; }
+            .form-row { grid-template-columns: 1fr; }
+            .neo-card h2, .form-section h2, .status-section h2, .recipients-section h2, .attachment-section h2, .tool-section h2, .how-to-use-section h2 { font-size: 1.15em; }
+            .action-buttons { flex-direction: column; }
+            .action-buttons .neo-button { width: 100%; }
+            .recipients-tabs { flex-direction: column; }
+            .tab-btn { border-right: none; border-bottom: var(--neo-border-thickness) solid var(--neo-border-color); }
+            .tab-btn:last-child { border-bottom: none; }
+            .ql-toolbar.ql-snow { overflow-x: auto; overflow-y: hidden; flex-wrap: nowrap; padding: 6px 2px; }
+            #editor { height: 180px; } .ql-editor { min-height: 120px; }
+            .dork-options { grid-template-columns: 1fr; }
+            #neo-toast-container { right: 10px; bottom: 10px; max-width: calc(100% - 20px); }
+            .startup-content { padding: var(--neo-section-padding); width: 90%;}
+            .startup-content h1 {font-size: 1.5em;}
+        }
+        /* --- End Neobrutalist Design Pro CSS (No History) --- */
+    </style>
+</head>
+<body>
+
+    <div id="startup-overlay">
+        <div class="startup-content">
+            <div id="internet-issue-message" style="display: none;">
+                <h1><span class="app-icon">🌐</span>Internet Issue</h1>
+                <p>Foundss Mail NeoPro requires an active internet connection to function correctly.</p>
+                <p>Please check your network settings and click retry.</p>
+                <button id="retry-connection-btn" class="neo-button neo-button-warning">🔄 Retry Connection</button>
+            </div>
+            <div id="welcome-message" style="display: none;">
+                <div class="neo-sidebar-header" style="margin-bottom: 20px;">
+                     <h2><span class="app-icon">📮</span>Welcome to Foundss Mail</h2>
+                     <p>NeoPro Edition</p>
+                </div>
+                <p>Your advanced email toolkit is ready. Let's boost your productivity!</p>
+                <button id="proceed-to-dashboard-btn" class="neo-button neo-button-success">🚀 Let's Get Started</button>
+            </div>
+            <div id="initial-loader">
+                <p style="font-size: 1.2em; font-weight: 500;">Initializing Foundss Mail NeoPro...</p>
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="neo-dashboard-container">
+        <aside class="neo-sidebar-left">
+            <div class="neo-sidebar-header">
+                <h2><span class="app-icon">📮</span>Foundss Mail</h2>
+                <p>NeoPro Edition</p>
+            </div>
+            <nav class="neo-sidebar-nav">
+                <div class="nav-group-title">Main Actions</div>
+                <button class="neo-nav-button active compose-active" data-section="compose" data-icon="✏️" data-title="Compose Email">
+                    <span class="neo-nav-icon">✏️</span> Compose
+                </button>
+                <button class="neo-nav-button" data-section="recipients" data-icon="👥" data-title="Manage Recipients">
+                    <span class="neo-nav-icon">👥</span> Recipients
+                </button>
+                <button class="neo-nav-button" data-section="send" data-icon="🚀" data-title="Send & Monitor">
+                    <span class="neo-nav-icon">🚀</span> Send & Monitor
+                </button>
+
+                <div class="nav-group-title">Productivity Tools</div>
+                <button class="neo-nav-button" data-section="emailExtractor" data-icon="✂️" data-title="Email Extractor">
+                    <span class="neo-nav-icon">✂️</span> Email Extractor
+                </button>
+                <button class="neo-nav-button" data-section="dorkGenerator" data-icon="🔍" data-title="Google Dork Generator">
+                    <span class="neo-nav-icon">🔍</span> Dork Generator
+                </button>
+                
+                <div class="nav-group-title">Support</div>
+                <button class="neo-nav-button" data-section="howToUse" data-icon="❓" data-title="How to Use Guide">
+                    <span class="neo-nav-icon">❓</span> How To Use
+                </button>
+            </nav>
+        </aside>
+
+        <main class="neo-main-content-area">
+            <header class="main-content-header">
+                <h1 id="current-section-title"><span class="title-icon">✏️</span>Compose Email</h1>
+            </header>
+
+            <!-- Compose Pane -->
+            <div id="compose" class="neo-content-pane active">
+                <div class="form-section">
+                    <h2><span class="section-icon">👤</span>Sender Information</h2>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="senderName">YOUR NAME:</label>
+                            <input type="text" id="senderName" placeholder="E.g., Jane Doe" value="Foundss Mail NeoPro">
+                        </div>
+                        <div class="input-group">
+                            <label for="senderEmail">YOUR GMAIL EMAIL:</label>
+                            <input type="email" id="senderEmail" placeholder="your_actual_email@gmail.com" value="testfoundss@gmail.com">
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-top: var(--neo-spacing-unit);">
+                        <div class="input-group">
+                             <label for="senderPassword">GMAIL APP PASSWORD:
+                                <span class="tooltip" tabindex="0"> 
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltiptext">For Gmail, enable 2-Step Verification and generate a 16-character App Password in your Google Account security settings. This is NOT your regular Gmail password.</span>
+                                </span>
+                            </label>
+                            <input type="password" id="senderPassword" placeholder="16-character app password">
+                        </div>
+                        <div class="input-group">
+                            <label for="emailSubject">EMAIL SUBJECT:</label>
+                            <input type="text" id="emailSubject" placeholder="Compelling Email Subject Line" value="NeoPro Test: Enhanced Productivity Tools!">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section" style="flex-grow: 1; display: flex; flex-direction: column;">
+                    <h2><span class="section-icon">✍️</span>Email Content</h2>
+                    <div class="editor-wrapper" style="flex-grow: 1; display: flex; flex-direction: column;">
+                        <div id="editor">
+                            <p>Hello from the <strong>Foundss Mail NeoPro Dashboard</strong>!</p><p><br></p>
+                            <p>This version features enhanced UI for our popular productivity tools: the Email Extractor and Google Dork Generator. We've also improved the 'Stop Process' functionality for better user feedback during email sending.</p>
+                            <p>We hope these refinements make your experience even smoother!</p><p><br></p>
+                            <p>Best Regards,<br>The Foundss Team</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h2><span class="section-icon">📎</span>Attachments</h2>
+                    <input type="file" id="attachments" multiple style="display: none;">
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-zone-content">
+                            <div class="drop-zone-icon">📤</div>
+                            <h4>Drop files here or click to browse</h4>
+                            <p>Supports all file types • Max 25MB per file</p>
+                        </div>
+                    </div>
+                    <div class="attachment-list" id="attachmentsList">
+                        <p class="no-items-message">No files attached yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recipients Pane -->
+            <div id="recipients" class="neo-content-pane">
+                <div class="recipients-section">
+                    <h2><span class="section-icon">➕</span>Add Recipients</h2>
+                    <div class="recipients-tabs">
+                        <button class="tab-btn active" data-tab-content="manual-entry">Manual Entry</button>
+                        <button class="tab-btn" data-tab-content="file-upload">File Upload</button>
+                    </div>
+                    <div id="manual-entry" class="tab-content-inner active">
+                        <div class="input-group">
+                            <label for="recipientsManual">Enter email addresses (one per line or comma/semicolon/space-separated):</label>
+                            <textarea id="recipientsManual" rows="5" placeholder="user1@example.com, user2@example.com; user3@example.com user4@example.com"></textarea>
+                        </div>
+                        <div class="action-buttons" style="margin-top: var(--neo-spacing-unit);"><button id="addManualEmailsBtn" class="neo-button neo-button-success">➕ Add These Emails</button></div>
+                    </div>
+                    <div id="file-upload" class="tab-content-inner">
+                         <p style="font-size: 0.9em; color: var(--neo-text-secondary); text-align: center; margin-bottom: var(--neo-spacing-unit);">Upload a .TXT or .CSV file. Emails should be one per line or separated by common delimiters.</p>
+                        <div class="action-buttons" style="margin-top: 0; justify-content: center;"><button id="loadTxtBtn" class="neo-button neo-button-warning">📄 Load from TXT</button><button id="loadCsvBtn" class="neo-button neo-button-purple">📊 Load from CSV</button></div>
+                    </div>
+                    <div class="email-count" id="emailCount" style="display: none;"><span id="recipientsCount">0</span> recipients ready</div>
+                </div>
+                <div class="recipients-section" style="flex-grow: 1; display: flex; flex-direction: column;">
+                    <h2><span class="section-icon">📋</span>Current Recipients List</h2>
+                    <div class="recipients-list-display" id="recipientsList">
+                        <p class="no-items-message">No recipients added yet.</p>
+                    </div>
+                    <div class="action-buttons" style="margin-top: var(--neo-spacing-unit);"><button id="clearRecipientsBtn" class="neo-button neo-button-danger">🗑️ Clear All Recipients</button></div>
+                </div>
+            </div>
+
+            <!-- Send & Monitor Pane -->
+            <div id="send" class="neo-content-pane">
+                <div class="neo-card">
+                    <h2><span class="section-icon">🕹️</span>Send Controls</h2>
+                    <div class="action-buttons" style="justify-content: center; margin-bottom: var(--neo-spacing-unit);"><button id="sendEmailsBtn" class="neo-button neo-button-success" style="font-size: 1.1em; padding: 12px 25px;">🚀 INITIATE SEND</button><button id="stopSendingBtn" class="neo-button neo-button-danger" style="font-size: 1.1em; padding: 12px 25px;" disabled>⏹️ STOP PROCESS</button></div>
+                </div>
+                <div class="status-section">
+                    <h2><span class="section-icon">📊</span>Live Progress</h2>
+                    <div class="status-message info" id="statusMessage">READY TO SEND.</div>
+                    <div class="progress-bar-container"><div class="progress-bar" id="progressBar" style="width: 0%;">0%</div></div>
+                </div>
+                <div class="status-section" style="flex-grow: 1; display: flex; flex-direction: column;">
+                    <h2><span class="section-icon">📝</span>Results Log</h2>
+                    <pre id="resultsLog" class="results-log"></pre>
+                    <div class="summary-message" id="summaryMessage">📊 Summary: 0 successful, 0 failed out of 0 total</div>
+                </div>
+            </div>
+
+            <!-- Email Extractor Pane -->
+            <div id="emailExtractor" class="neo-content-pane">
+                <div class="tool-section">
+                    <h2><span class="section-icon">✂️</span>Email Extractor</h2>
+                    <p style="margin-bottom: var(--neo-spacing-unit); font-size: 0.9em; color: var(--neo-text-secondary);">Paste any block of text below, and we'll pull out the email addresses for you.</p>
+                    
+                    <div class="input-area">
+                        <div class="area-header">Input Text:</div>
+                        <textarea id="textToExtractEmails" rows="8" placeholder="Paste text containing email addresses here... example@domain.com, another.email@sub.example.net etc."></textarea>
+                    </div>
+                    
+                    <div class="action-buttons" style="margin-top: 0; margin-bottom: var(--neo-spacing-unit);">
+                        <button id="extractEmailsBtn" class="neo-button neo-button-orange">✨ Extract Emails</button>
+                    </div>
+                    
+                    <div class="output-area">
+                        <div class="area-header">
+                            Extracted Emails (Unique):
+                            <span id="extractedEmailsCountBadge" class="count-badge" style="display:none;">0</span>
+                        </div>
+                        <div id="extractedEmailsOutput">No emails extracted yet.</div>
+                        <div class="output-actions">
+                            <button id="copyExtractedEmailsBtn" class="neo-button copy-button" title="Copy Extracted Emails" style="display:none;">📋 Copy Emails</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dork Generator Pane -->
+            <div id="dorkGenerator" class="neo-content-pane">
+                 <div class="tool-section">
+                    <h2><span class="section-icon">🔍</span>Google Dork Generator (for Email Discovery)</h2>
+                    <p style="margin-bottom: var(--neo-spacing-unit); font-size: 0.9em; color: var(--neo-text-secondary);">Generate Google search queries (dorks) to find publicly listed email addresses. Use responsibly and ethically.</p>
+                    
+                    <div class="input-area">
+                        <div class="area-header">Dork Criteria:</div>
+                        <div class="dork-options">
+                            <div class="input-group"><label for="dorkKeywords">Keywords (e.g., "marketing managers San Francisco"):</label><input type="text" id="dorkKeywords" placeholder="Enter keywords"></div>
+                            <div class="input-group"><label for="dorkSite">Specific Site (e.g., linkedin.com/company/):</label><input type="text" id="dorkSite" placeholder="Optional: example.com"></div>
+                            <div class="input-group"><label for="dorkFiletype">Filetype (e.g., xls, pdf):</label><select id="dorkFiletype" class="neo-select"><option value="">Any</option><option value="xls">XLS</option><option value="xlsx">XLSX</option><option value="csv">CSV</option><option value="pdf">PDF</option><option value="doc">DOC</option><option value="docx">DOCX</option><option value="txt">TXT</option><option value="ppt">PPT</option><option value="pptx">PPTX</option></select></div>
+                            <div class="input-group"><label for="dorkIntext">Specific Text in Page (e.g., "@company.com"):</label><input type="text" id="dorkIntext" placeholder="Optional: e.g., @company.com, contact"></div>
+                            <div class="input-group"><label for="dorkIntitle">Text in Title (e.g., "contact list"):</label><input type="text" id="dorkIntitle" placeholder="Optional: e.g., staff directory"></div>
+                            <div class="input-group"><label for="dorkEmailProvider">Email Provider (e.g., gmail.com):</label><input type="text" id="dorkEmailProvider" placeholder="Optional: e.g., gmail.com"></div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons" style="margin-top: 0; margin-bottom: var(--neo-spacing-unit);">
+                        <button id="generateDorkBtn" class="neo-button neo-button-purple">💡 Generate Dork</button>
+                    </div>
+
+                    <div class="output-area">
+                        <div class="area-header">Generated Dork (Copy & Paste into Google):</div>
+                        <div id="generatedDorkOutput">Dork will appear here.</div>
+                        <div class="output-actions">
+                            <button id="copyDorkBtn" class="neo-button copy-button" title="Copy Dork" style="display:none;">📋 Copy Dork</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How To Use Pane -->
+            <div id="howToUse" class="neo-content-pane">
+                <div class="how-to-use-section">
+                    <h2><span class="section-icon">📘</span>Getting Started with Foundss Mail NeoPro</h2>
+                    <p>Welcome! This guide will help you get the most out of the Foundss Mail NeoPro dashboard.</p>
+                    <h3><span class="section-icon">🔑</span>1. Gmail App Password (Crucial!)</h3>
+                    <p>To send emails using your Gmail account, you <strong>MUST</strong> use an App Password. Your regular Gmail password will not work and will result in authentication errors.</p>
+                    <ol>
+                        <li>Go to your Google Account: <a href="https://myaccount.google.com/" target="_blank" class="neo-link">myaccount.google.com</a>.</li>
+                        <li>Navigate to <span class="highlight">Security</span>.</li>
+                        <li>Under "Signing in to Google," if "2-Step Verification" is off, you need to turn it <span class="highlight">ON</span> first.</li>
+                        <li>Once 2-Step Verification is on, find and click on <span class="highlight">App passwords</span>.</li>
+                        <li>Select app: <span class="highlight">Mail</span>. Select device: <span class="highlight">Other (Custom name)</span>. Name it (e.g., "FoundssMailNeoPro").</li>
+                        <li>Click <span class="highlight">Generate</span>. Copy the <span class="highlight">16-character password</span>.</li>
+                        <li>Paste this into the "GMAIL APP PASSWORD" field in the "Compose" section.</li>
+                    </ol>
+                    <p><strong>Important:</strong> Store this App Password securely. Google only shows it once.</p>
+                    <h3><span class="section-icon">✉️</span>2. Composing and Sending</h3>
+                    <ul>
+                        <li><strong>Sender Information:</strong> Fill required fields in "Compose".</li>
+                        <li><strong>Email Content:</strong> Use the rich text editor.</li>
+                        <li><strong>Attachments:</strong> Add in "Compose".</li>
+                        <li><strong>Recipients:</strong> Add in "Recipients" section.</li>
+                        <li><strong>Send & Monitor:</strong> Initiate send and track progress. Use "Stop Process" if needed (note: this requests a stop; server-side processing of the current batch might complete).</li>
+                    </ul>
+                    <h3><span class="section-icon">🛠️</span>3. Other Productivity Tools</h3>
+                    <ul><li><strong>Email Extractor:</strong> Paste text, click "Extract Emails". View count and copy.</li><li><strong>Google Dork Generator:</strong> Fill criteria, click "Generate Dork". Use ethically.</li></ul>
+                    <h3><span class="section-icon">💡</span>4. Tips & Troubleshooting</h3>
+                    <ul>
+                        <li><strong>Internet Required:</strong> The application needs an internet connection to start. If you see an "Internet Issue" message, check your connection and click retry.</li>
+                        <li><strong>Authentication Failed (Gmail):</strong> Double-check your App Password & ensure 2-Step Verification is enabled for your Gmail account. Also, for some accounts, you might need to enable "Less secure app access" in Google settings if not using an App Password (though App Passwords are strongly recommended).</li>
+                        <li><strong>Gmail Sending Limits:</strong> Standard Gmail accounts have sending limits (around 500 emails/day). For bulk sending, consider dedicated services.</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="neo-toast-container"></div>
+
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Startup Elements
+            const startupOverlay = document.getElementById('startup-overlay');
+            const internetIssueMessage = document.getElementById('internet-issue-message');
+            const welcomeMessage = document.getElementById('welcome-message');
+            const initialLoader = document.getElementById('initial-loader');
+            const retryConnectionBtn = document.getElementById('retry-connection-btn');
+            const proceedToDashboardBtn = document.getElementById('proceed-to-dashboard-btn');
+            const neoDashboardContainer = document.querySelector('.neo-dashboard-container');
+
+            // Core Dashboard Elements
+            const neoNavButtons = document.querySelectorAll('.neo-nav-button');
+            const neoContentPanes = document.querySelectorAll('.neo-content-pane');
+            const currentSectionTitleEl = document.getElementById('current-section-title');
+
+            // Compose Pane Elements
+            const senderNameInput = document.getElementById('senderName');
+            const senderEmailInput = document.getElementById('senderEmail');
+            const senderPasswordInput = document.getElementById('senderPassword');
+            const emailSubjectInput = document.getElementById('emailSubject');
+            const attachmentsInput = document.getElementById('attachments');
+            const dropZone = document.getElementById('dropZone');
+            const attachmentsListDiv = document.getElementById('attachmentsList');
+
+            // Recipients Pane Elements
+            const recipientsTabButtons = document.querySelectorAll('.recipients-tabs .tab-btn'); 
+            const recipientsTabContents = document.querySelectorAll('.tab-content-inner'); 
+            const recipientsManualTextarea = document.getElementById('recipientsManual');
+            const addManualEmailsBtn = document.getElementById('addManualEmailsBtn');
+            const loadTxtBtn = document.getElementById('loadTxtBtn');
+            const loadCsvBtn = document.getElementById('loadCsvBtn');
+            const recipientsListDiv = document.getElementById('recipientsList');
+            const recipientsCountSpan = document.getElementById('recipientsCount');
+            const clearRecipientsBtn = document.getElementById('clearRecipientsBtn');
+            const emailCountBadge = document.getElementById('emailCount');
+            
+            // Send & Monitor Pane Elements
+            const sendEmailsBtn = document.getElementById('sendEmailsBtn');
+            const stopSendingBtn = document.getElementById('stopSendingBtn');
+            const statusMessageDiv = document.getElementById('statusMessage');
+            const progressBar = document.getElementById('progressBar');
+            const resultsLogPre = document.getElementById('resultsLog');
+            const summaryMessageDiv = document.getElementById('summaryMessage');
+
+            // Email Extractor Elements
+            const textToExtractEmails = document.getElementById('textToExtractEmails');
+            const extractEmailsBtn = document.getElementById('extractEmailsBtn');
+            const extractedEmailsOutput = document.getElementById('extractedEmailsOutput');
+            const copyExtractedEmailsBtn = document.getElementById('copyExtractedEmailsBtn');
+            const extractedEmailsCountBadge = document.getElementById('extractedEmailsCountBadge');
+
+
+            // Dork Generator Elements
+            const dorkKeywordsInput = document.getElementById('dorkKeywords');
+            const dorkSiteInput = document.getElementById('dorkSite');
+            const dorkFiletypeSelect = document.getElementById('dorkFiletype');
+            const dorkIntextInput = document.getElementById('dorkIntext');
+            const dorkIntitleInput = document.getElementById('dorkIntitle');
+            const dorkEmailProviderInput = document.getElementById('dorkEmailProvider');
+            const generateDorkBtn = document.getElementById('generateDorkBtn');
+            const generatedDorkOutput = document.getElementById('generatedDorkOutput');
+            const copyDorkBtn = document.getElementById('copyDorkBtn');
+            
+            // State Variables
+            let selectedFiles = []; 
+            let recipients = [];    
+            let sendingActive = false; // Tracks if the frontend initiated sending process is active
+            let stopRequested = false; // Flag to indicate if user requested stop
+
+            const quill = new Quill('#editor', {
+                theme: 'snow',
+                placeholder: 'Craft your compelling message here!',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }], [{ 'font': [] }],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'script': 'sub'}, { 'script': 'super' }],
+                        ['blockquote', 'code-block'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }, { 'align': [] }],
+                        ['link', 'image', 'video'], ['clean']
+                    ]
+                }
+            });
+            
+            async function checkInternetConnection() {
+                if (!navigator.onLine) return false;
+                try {
+                    // Use a more reliable and CORS-friendly endpoint for checking.
+                    // Using a timestamp to bypass browser cache for this check.
+                    await fetch('https://1.1.1.1/cdn-cgi/trace?_=' + new Date().getTime(), { method: 'GET', mode: 'no-cors', cache: 'no-store' });
+                    // no-cors means we can't read the response, but if it doesn't throw, connection is likely okay.
+                    return true; 
+                } catch (error) {
+                    console.warn("Internet check fetch failed:", error);
+                     try { // Fallback check
+                        await fetch('https://dns.google/resolve?name=example.com&type=A&_=' + new Date().getTime(), {mode: 'no-cors', cache: 'no-store'});
+                        return true;
+                    } catch (fallbackError) {
+                        console.warn("Fallback Internet check failed:", fallbackError);
+                        return false;
+                    }
+                }
+            }
+
+            async function initializeAppStartup() {
+                initialLoader.style.display = 'block';
+                internetIssueMessage.style.display = 'none';
+                welcomeMessage.style.display = 'none';
+                const isOnline = await checkInternetConnection();
+                initialLoader.style.display = 'none';
+                if (isOnline) {
+                    welcomeMessage.style.display = 'block';
+                } else {
+                    internetIssueMessage.style.display = 'block';
+                }
+                startupOverlay.style.display = 'flex';
+            }
+
+            retryConnectionBtn.addEventListener('click', initializeAppStartup);
+            
+            proceedToDashboardBtn.addEventListener('click', () => {
+                startupOverlay.style.display = 'none';
+                neoDashboardContainer.classList.add('visible');
+                document.body.style.overflow = 'auto'; 
+                initializeDashboardComponents(); 
+            });
+            
+            function initializeDashboardComponents() {
+                renderAttachmentsList();
+                renderRecipientsList();
+                updateStatus('Dashboard ready. Select an action.', 'info');
+                if (extractedEmailsCountBadge) extractedEmailsCountBadge.style.display = 'none';
+            }
+
+            neoNavButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetSection = button.dataset.section;
+                    const sectionTitleText = button.dataset.title || button.textContent.replace(button.querySelector('.neo-nav-icon').textContent, '').trim();
+                    const sectionIcon = button.dataset.icon || button.querySelector('.neo-nav-icon').textContent;
+
+                    neoNavButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                        ['compose-active', 'recipients-active', 'send-active', 'emailExtractor-active', 'dorkGenerator-active', 'howToUse-active'].forEach(cls => btn.classList.remove(cls));
+                    });
+                    button.classList.add('active', `${targetSection}-active`);
+
+                    neoContentPanes.forEach(pane => {
+                        pane.classList.toggle('active', pane.id === targetSection);
+                    });
+                    
+                    currentSectionTitleEl.innerHTML = `<span class="title-icon">${sectionIcon}</span>${sectionTitleText}`;
+                });
+            });
+
+            function showFeedback(message, type = 'info', duration = 3500) {
+                const container = document.getElementById('neo-toast-container');
+                if (!container) { 
+                    if (type === 'error' || type === 'warning') alert(`${type.toUpperCase()}: ${message}`);
+                    else console.log(`Feedback (${type}): ${message}`);
+                    return;
+                }
+                const toast = document.createElement('div');
+                toast.className = `neo-toast ${type}`;
+                toast.textContent = message;
+                container.appendChild(toast);
+                requestAnimationFrame(() => { 
+                    requestAnimationFrame(() => { toast.classList.add('show'); });
+                });
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.addEventListener('transitionend', () => {
+                        if (toast.parentNode === container) { container.removeChild(toast); }
+                    }, { once: true });
+                }, duration);
+            }
+
+            function updateStatus(message, type = 'info') {
+                if(statusMessageDiv) {
+                    statusMessageDiv.textContent = message.toUpperCase();
+                    statusMessageDiv.className = 'status-message'; statusMessageDiv.classList.add(type);
+                }
+            }
+            function logResult(message, type = 'info') { 
+                if(resultsLogPre) {
+                    const span = document.createElement('span');
+                    // Sanitize message slightly for display in <pre>
+                    span.textContent = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    span.classList.add(type);
+                    resultsLogPre.appendChild(span); resultsLogPre.appendChild(document.createTextNode('\n'));
+                    resultsLogPre.scrollTop = resultsLogPre.scrollHeight;
+                }
+            }
+            function updateProgressBar(progress) {
+                 if(progressBar) {
+                    const roundedProgress = Math.round(progress);
+                    progressBar.style.width = `${roundedProgress}%`; progressBar.textContent = `${roundedProgress}%`;
+                }
+            }
+            function updateSummary(successful, failed, total) {
+                if(summaryMessageDiv) {
+                    summaryMessageDiv.textContent = `📊 Summary: ${successful} successful, ${failed} failed out of ${total} total emails.`;
+                }
+            }
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 B'; const k = 1024; const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+            }
+            function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim()); }
+            
+            function renderAttachmentsList() {
+                if (!attachmentsListDiv) return;
+                attachmentsListDiv.innerHTML = ''; 
+                if (selectedFiles.length === 0) {
+                    attachmentsListDiv.innerHTML = '<p class="no-items-message">No files attached yet.</p>'; return;
+                }
+                selectedFiles.forEach((file, index) => {
+                    const itemDiv = document.createElement('div'); itemDiv.classList.add('attachment-item');
+                    const fileExtension = file.name.split('.').pop().toUpperCase().substring(0, 4) || 'FILE';
+                    itemDiv.innerHTML = `
+                        <div class="attachment-info" style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
+                            <div class="file-icon">${fileExtension}</div>
+                            <div class="file-details" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                <span class="file-name" title="${file.name}">${file.name}</span>
+                                <span class="file-size" style="font-size:0.85em; color: var(--neo-text-secondary);">${formatFileSize(file.size)}</span>
+                            </div>
+                        </div>
+                        <button class="remove-attachment neo-button neo-button-danger" data-index="${index}" title="Remove ${file.name}" style="padding: 3px 8px; font-size: 0.9em;">X</button>`;
+                    attachmentsListDiv.appendChild(itemDiv);
+                });
+                attachmentsListDiv.querySelectorAll('.remove-attachment').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const indexToRemove = parseInt(event.target.dataset.index);
+                        selectedFiles.splice(indexToRemove, 1); renderAttachmentsList();
+                    });
+                });
+            }
+            function renderRecipientsList() {
+                if (!recipientsListDiv || !recipientsCountSpan || !emailCountBadge) return;
+                recipientsListDiv.innerHTML = '';
+                if (recipients.length === 0) {
+                    recipientsListDiv.innerHTML = '<p class="no-items-message">No recipients added yet.</p>';
+                } else {
+                    recipients.forEach((email, index) => {
+                        const itemDiv = document.createElement('div'); itemDiv.classList.add('recipients-list-item');
+                        itemDiv.innerHTML = `
+                            <span title="${email}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-grow:1;">${email}</span>
+                            <button data-index="${index}" class="remove-recipient-btn neo-button neo-button-danger" title="Remove ${email}" style="padding: 3px 8px; font-size: 0.9em; margin-left:10px;">X</button>`;
+                        recipientsListDiv.appendChild(itemDiv);
+                    });
+                }
+                recipientsCountSpan.textContent = recipients.length;
+                emailCountBadge.style.display = recipients.length > 0 ? 'inline-block' : 'none';
+                recipientsListDiv.querySelectorAll('.remove-recipient-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const indexToRemove = parseInt(event.target.dataset.index);
+                        recipients.splice(indexToRemove, 1); renderRecipientsList();
+                    });
+                });
+            }
+
+            if (dropZone) dropZone.addEventListener('click', () => attachmentsInput.click());
+            if (dropZone) dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            if (dropZone) dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+            if (dropZone) dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+            if (attachmentsInput) attachmentsInput.addEventListener('change', (event) => { handleFiles(event.target.files); event.target.value = null; });
+            
+            function handleFiles(files) { 
+                let newFilesAdded = 0;
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) { selectedFiles.push(file); newFilesAdded++; }
+                }
+                if(newFilesAdded > 0) showFeedback(`${newFilesAdded} file(s) added.`, 'success');
+                else if (files.length > 0) showFeedback('Selected file(s) already in list or no new files chosen.', 'info');
+                renderAttachmentsList();
+            }
+
+            recipientsTabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetContent = button.dataset.tabContent;
+                    recipientsTabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active');
+                    recipientsTabContents.forEach(content => content.classList.toggle('active', content.id === targetContent));
+                });
+            });
+            if (addManualEmailsBtn) addManualEmailsBtn.addEventListener('click', () => { 
+                if (!recipientsManualTextarea) return;
+                const emailsText = recipientsManualTextarea.value.trim();
+                if (emailsText) {
+                    const rawEmails = emailsText.split(/[\n,; ]+/); let addedCount = 0; let invalidCount = 0; let duplicateCount = 0;
+                    rawEmails.forEach(rawEmail => {
+                        const email = rawEmail.trim(); if (!email) return;
+                        if (isValidEmail(email)) { if (!recipients.includes(email)) { recipients.push(email); addedCount++; } else { duplicateCount++; } } else { invalidCount++; }
+                    });
+                    let feedbackMsg = "";
+                    if (addedCount > 0) feedbackMsg += `Added ${addedCount} new email(s). `;
+                    if (duplicateCount > 0) feedbackMsg += `${duplicateCount} duplicate(s) ignored. `;
+                    if (invalidCount > 0) feedbackMsg += `${invalidCount} invalid entry/ies ignored.`;
+                    if (feedbackMsg) showFeedback(feedbackMsg.trim(), addedCount > 0 ? 'success' : 'info' );
+                    else showFeedback('No valid new email addresses to add.', 'info');
+                    if (addedCount > 0) recipientsManualTextarea.value = ''; 
+                    renderRecipientsList();
+                } else { showFeedback('Please enter email addresses.', 'warning'); }
+            });
+             async function parseFileForEmails(file, fileType) {
+                try {
+                    const fileContent = await file.text(); let parsedEmails = [];
+                    // Simple split for TXT and CSV; JSON attempt is more complex for robust parsing
+                    if (fileType === 'txt_or_csv') { 
+                        parsedEmails = fileContent.split(/[\n,; ]+/).map(e => e.trim());
+                    } else {
+                         // Fallback or specific logic for other types if needed
+                        parsedEmails = fileContent.split(/[\n,; ]+/).map(e => e.trim());
+                    }
+                    let addedCount = 0; let invalidCount = 0; let duplicateCount = 0;
+                    parsedEmails.forEach(email => { if(!email) return; if (isValidEmail(email)) { if (!recipients.includes(email)) { recipients.push(email); addedCount++; } else { duplicateCount++; } } else { invalidCount++; } });
+                    let feedbackMsg = "";
+                    if (addedCount > 0) feedbackMsg += `Added ${addedCount} new email(s) from ${file.name}. `;
+                    if (duplicateCount > 0) feedbackMsg += `${duplicateCount} duplicate(s) ignored. `;
+                    if (invalidCount > 0) feedbackMsg += `${invalidCount} invalid entry/ies ignored.`;
+                    if(feedbackMsg) showFeedback(feedbackMsg.trim(), addedCount > 0 ? 'success' : 'info'); else showFeedback(`No new valid email addresses found in ${file.name}.`, 'info');
+                    renderRecipientsList();
+                } catch (error) { showFeedback(`Error reading ${file.name}: ${error.message}`, 'error'); console.error(`Error reading ${file.name}:`, error); }
+            }
+            if (loadTxtBtn) loadTxtBtn.addEventListener('click', () => { 
+                const input = document.createElement('input'); input.type = 'file'; input.accept = '.txt,text/plain';
+                input.onchange = async (event) => { const file = event.target.files[0]; if (file) parseFileForEmails(file, 'txt_or_csv'); event.target.value = null; };
+                input.click();
+            });
+            if (loadCsvBtn) loadCsvBtn.addEventListener('click', () => {
+                const input = document.createElement('input'); input.type = 'file'; input.accept = '.csv,text/csv';
+                input.onchange = async (event) => { const file = event.target.files[0]; if (file) parseFileForEmails(file, 'txt_or_csv'); event.target.value = null; };
+                input.click();
+            });
+            if (clearRecipientsBtn) clearRecipientsBtn.addEventListener('click', () => {
+                if (recipients.length === 0) { showFeedback('Recipient list is already empty.', 'info'); return; }
+                if (confirm('Are you sure you want to clear all recipients? This action cannot be undone.')) { recipients = []; renderRecipientsList(); showFeedback('All recipients cleared.', 'success'); }
+            });
+
+            if (sendEmailsBtn) sendEmailsBtn.addEventListener('click', async () => {
+                if (sendingActive) { showFeedback('A sending process is already active.', 'warning'); return; }
+                
+                stopRequested = false; // Reset stop flag for new process
+                const senderNameVal = senderNameInput.value.trim(); const senderEmailVal = senderEmailInput.value.trim();
+                const senderPasswordVal = senderPasswordInput.value.trim(); const emailSubjectVal = emailSubjectInput.value.trim();
+                const emailBodyHTML = quill.root.innerHTML;
+
+                if (!senderNameVal) { showFeedback('Sender Name is required.', 'error'); senderNameInput.focus(); return; }
+                if (!isValidEmail(senderEmailVal)) { showFeedback('Valid Sender Email is required.', 'error'); senderEmailInput.focus(); return; }
+                if (!senderPasswordVal) { showFeedback('Sender App Password is required.', 'error'); senderPasswordInput.focus(); return; }
+                // Basic check for 16 char app password, but Gmail might have other formats.
+                // if (senderPasswordVal.length !== 16 || senderPasswordVal.includes(' ')) { showFeedback('App Password should generally be 16 characters without spaces. Please verify from Google Account settings.', 'warning'); senderPasswordInput.focus(); return; }
+                if (!emailSubjectVal) { showFeedback('Email Subject is required.', 'error'); emailSubjectInput.focus(); return; }
+                if (!emailBodyHTML || emailBodyHTML === "<p><br></p>" || quill.getText().trim().length === 0) { showFeedback('Email Content cannot be empty.', 'error'); quill.focus(); return; }
+                if (recipients.length === 0) { showFeedback('Please add at least one recipient.', 'error'); document.querySelector('.neo-nav-button[data-section="recipients"]').click(); return; }
+                
+                if (!confirm(`You are about to send an email with subject "${emailSubjectVal}" to ${recipients.length} recipient(s).\n\nProceed?`)) return;
+
+                sendingActive = true; sendEmailsBtn.disabled = true; stopSendingBtn.disabled = false;
+                resultsLogPre.textContent = ''; updateProgressBar(0); updateSummary(0, 0, recipients.length);
+                updateStatus("Initiating send sequence...", 'info'); logResult("🚀 Starting email sending process...", 'info');
+                
+                const formData = new FormData(); formData.append('sender_name', senderNameVal); formData.append('sender_email', senderEmailVal);
+                formData.append('sender_password', senderPasswordVal); formData.append('email_subject', emailSubjectVal);
+                formData.append('recipients', recipients.join(','));  formData.append('email_body_html', emailBodyHTML);
+                
+                // Read files and append them. This needs to be async if files are large.
+                // For simplicity, reading them here.
+                for (const file of selectedFiles) {
+                    // No need to re-read and encode here if `app.py` expects file objects directly from FormData
+                    // If `app.py` expects base64, then the encoding should happen here.
+                    // The current `app.py` expects `request.files` which are file-like objects.
+                    formData.append('attachments', file, file.name);
+                }
+                
+                // The backend will handle emails one by one.
+                // The progress bar here will just jump to 100% when the backend responds.
+                // For per-email progress, you'd need a different communication mechanism (e.g., WebSockets or Server-Sent Events)
+                // or iterative API calls, which makes stopping more complex.
+
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/send_emails', { method: 'POST', body: formData });
+                    
+                    if (stopRequested) { // Check if stop was pressed during fetch/backend processing
+                        logResult("ℹ️ Sending was interrupted by user request. Server processing might have partially completed.", "warning");
+                        // Status already updated by stopSendingBtn, response handling might be moot or partial
+                        updateStatus("STOP REQUESTED. Check logs for status of emails.", 'warning');
+                    } else {
+                         const data = await response.json();
+                        if (response.ok) {
+                           updateStatus(`Process completed. Successful: ${data.successful}, Failed: ${data.failed}.`, 'success');
+                           data.results.forEach(result => logResult(result, result.startsWith("✅") ? 'success' : 'error'));
+                           updateSummary(data.successful, data.failed, data.total);
+                        } else {
+                            updateStatus(`SERVER ERROR: ${data.message || 'An unknown error occurred.'}`, 'error');
+                            if (data.results && Array.isArray(data.results)) data.results.forEach(result => logResult(result, 'error'));
+                            else if (data.message) logResult(`❌ Server error: ${data.message}`, 'error');
+                            updateSummary(0, data.total || recipients.length, data.total || recipients.length);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    if (!stopRequested) {
+                        updateStatus(`NETWORK ERROR OR SERVER UNREACHABLE. Ensure backend is running.`, 'error');
+                    }
+                    logResult(`❌ NETWORK ERROR: ${error.message}. Could not connect to backend.`, 'error');
+                    updateSummary(0, recipients.length, recipients.length);
+                } finally {
+                    if (!stopRequested) updateProgressBar(100); // Only set to 100 if not stopped.
+                    sendingActive = false; 
+                    sendEmailsBtn.disabled = false; 
+                    stopSendingBtn.disabled = true;
+                    stopRequested = false; // Reset for next time
+                    logResult("🏁 Email sending process (frontend perspective) finished.", 'info');
+                }
+            });
+
+            if (stopSendingBtn) stopSendingBtn.addEventListener('click', () => { 
+                if (!sendingActive) {
+                    showFeedback("No active sending process to stop.", "info");
+                    return;
+                }
+                stopRequested = true; // Set the flag
+                // Note: This client-side stop doesn't inherently stop the Flask server mid-request for the current /send_emails call.
+                // Flask will likely complete processing all emails in the current batch.
+                // True cancellable tasks on the backend are more complex.
+
+                sendingActive = false; 
+                sendEmailsBtn.disabled = false;
+                stopSendingBtn.disabled = true;
+                updateStatus("STOP REQUESTED. The backend might still be processing the current batch.", 'warning');
+                logResult("⚠️ User requested to stop. Any emails already submitted to the server for the current batch might still be sent.", 'warning');
+                showFeedback("Stop request acknowledged. The server might complete sending the current batch of emails.", "info");
+                updateProgressBar(0); // Visually indicate stop
+            });
+
+            if (extractEmailsBtn) extractEmailsBtn.addEventListener('click', () => {
+                const text = textToExtractEmails.value;
+                copyExtractedEmailsBtn.style.display = 'none';
+                if (extractedEmailsCountBadge) extractedEmailsCountBadge.style.display = 'none';
+
+                if (!text.trim()) { 
+                    extractedEmailsOutput.textContent = 'Please paste some text first.'; 
+                    extractedEmailsOutput.style.color = 'var(--neo-text-tertiary)'; 
+                    return; 
+                }
+                const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+                const foundEmails = text.match(emailRegex);
+                if (foundEmails && foundEmails.length > 0) {
+                    const uniqueEmails = [...new Set(foundEmails.map(email => email.toLowerCase()))]; // Make unique and lowercase
+                    extractedEmailsOutput.textContent = uniqueEmails.join('\n'); 
+                    extractedEmailsOutput.style.color = 'var(--neo-text-primary)';
+                    copyExtractedEmailsBtn.style.display = 'inline-flex';
+                    if (extractedEmailsCountBadge) {
+                        extractedEmailsCountBadge.textContent = uniqueEmails.length;
+                        extractedEmailsCountBadge.style.display = 'inline-block';
+                    }
+                    showFeedback(`Extracted ${uniqueEmails.length} unique email(s).`, 'success');
+                } else { 
+                    extractedEmailsOutput.textContent = 'No email addresses found in the provided text.'; 
+                    extractedEmailsOutput.style.color = 'var(--neo-text-secondary)'; 
+                    if (extractedEmailsCountBadge) extractedEmailsCountBadge.style.display = 'none';
+                    showFeedback('No emails found.', 'info'); 
+                }
+            });
+            if (generateDorkBtn) generateDorkBtn.addEventListener('click', () => {
+                let dorkParts = [];
+                const keywords = dorkKeywordsInput.value.trim(); const site = dorkSiteInput.value.trim();
+                const filetype = dorkFiletypeSelect.value; const intext = dorkIntextInput.value.trim();
+                const intitle = dorkIntitleInput.value.trim(); const emailProvider = dorkEmailProviderInput.value.trim();
+                
+                copyDorkBtn.style.display = 'none';
+
+                if (keywords) dorkParts.push(`"${keywords}"`); if (site) dorkParts.push(`site:${site}`);
+                if (filetype) dorkParts.push(`filetype:${filetype}`); if (intext) dorkParts.push(`intext:"${intext}"`);
+                if (intitle) dorkParts.push(`intitle:"${intitle}"`);
+                
+                let emailPatterns = [];
+                if (emailProvider) {
+                    // Support multiple providers comma-separated
+                    const providers = emailProvider.split(',').map(p => p.trim()).filter(p => p);
+                    if (providers.length > 0) {
+                        emailPatterns.push("(" + providers.map(p => `intext:"@${p}"`).join(" OR ") + ")");
+                    }
+                } else if (keywords || site || intext || intitle) { 
+                    // Add common email indicators if no specific provider is given but other criteria are
+                    emailPatterns.push(`(intext:"@gmail.com" OR intext:"@yahoo.com" OR intext:"@outlook.com" OR intext:"@aol.com" OR intext:"contact" OR intext:"email")`);
+                }
+
+                if (emailPatterns.length > 0) dorkParts.push(emailPatterns.join(" "));
+                
+                const finalDork = dorkParts.join(" ").trim();
+                if (finalDork) { 
+                    generatedDorkOutput.textContent = finalDork; 
+                    generatedDorkOutput.style.color = 'var(--neo-text-primary)'; 
+                    copyDorkBtn.style.display = 'inline-flex';
+                }
+                else { 
+                    generatedDorkOutput.textContent = 'Please provide some criteria to generate a dork.'; 
+                    generatedDorkOutput.style.color = 'var(--neo-text-secondary)'; 
+                }
+            });
+
+            function copyToClipboardHandler(textProviderFunc, buttonElement, successMessage) {
+                const textToCopy = textProviderFunc();
+                if (!textToCopy || textToCopy.trim() === "" || textToCopy.startsWith("No ") || textToCopy.startsWith("Dork will") || textToCopy.startsWith("Please paste")) {
+                    showFeedback('Nothing to copy yet.', 'info'); return;
+                }
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = buttonElement.innerHTML; const originalClass = buttonElement.className;
+                    buttonElement.innerHTML = '✅ Copied!'; buttonElement.classList.add('copied'); buttonElement.disabled = true;
+                    setTimeout(() => {
+                        buttonElement.innerHTML = originalText; buttonElement.className = originalClass; buttonElement.disabled = false;
+                    }, 2000);
+                    showFeedback(successMessage || 'Content copied to clipboard!', 'success');
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showFeedback('Failed to copy text. Your browser might not support this feature or permissions are denied.', 'error');
+                });
+            }
+
+            if (copyExtractedEmailsBtn) copyExtractedEmailsBtn.addEventListener('click', () => copyToClipboardHandler(() => extractedEmailsOutput.textContent, copyExtractedEmailsBtn, 'Extracted emails copied!'));
+            if (copyDorkBtn) copyDorkBtn.addEventListener('click', () => copyToClipboardHandler(() => generatedDorkOutput.textContent, copyDorkBtn, 'Dork copied!'));
+
+            initializeAppStartup();
+        });
+    </script>
+</body>
+</html>
