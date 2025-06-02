@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foundss Mail Dashboard - NeoPro (No History - No AI Writer)</title>
+    <title>Foundss Mail Dashboard - NeoPro (Full Feature)</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
@@ -37,6 +37,9 @@
             --neo-accent-orange: #FD7E14;
             --neo-accent-teal: #20C997; 
             --neo-accent-cyan: #17A2B8; 
+            --neo-accent-indigo: #6610F2; 
+            --neo-accent-lime: #A7D129; 
+
 
             --neo-shadow-offset: 5px;
             --neo-shadow: var(--neo-shadow-offset) var(--neo-shadow-offset) 0px var(--neo-border-color);
@@ -55,6 +58,7 @@
             font-family: var(--neo-font-primary); background-color: var(--neo-bg-body);
             color: var(--neo-text-primary); line-height: 1.6; font-weight: 400;
             display: flex; min-height: 100vh; overflow: hidden; 
+            transition: background-color 0.3s ease, color 0.3s ease; /* For theme transitions */
         }
         
         #startup-overlay {
@@ -91,7 +95,7 @@
             width: 270px; background-color: var(--neo-bg-sidebar);
             border-right: var(--neo-border-thickness) solid var(--neo-border-color);
             padding: var(--neo-spacing-unit); display: flex; flex-direction: column;
-            flex-shrink: 0; transition: width 0.3s ease;
+            flex-shrink: 0; transition: width 0.3s ease, background-color 0.3s ease;
         }
         .neo-sidebar-header h2 {
             font-size: 1.7em; font-weight: 800; color: var(--neo-text-primary); text-align: center;
@@ -128,10 +132,13 @@
         }
         .neo-nav-button.active:hover { filter: brightness(0.92); color: var(--neo-text-on-accent-light); }
         .neo-nav-button.active.compose-active { background-color: var(--neo-accent-blue); }
+        /* .neo-nav-button.active.readEmails-active { background-color: var(--neo-accent-lime); }  Removed */
         .neo-nav-button.active.recipients-active { background-color: var(--neo-accent-pink); }
         .neo-nav-button.active.send-active { background-color: var(--neo-accent-green); }
         .neo-nav-button.active.emailExtractor-active { background-color: var(--neo-accent-orange); }
         .neo-nav-button.active.dorkGenerator-active { background-color: var(--neo-accent-purple); }
+        .neo-nav-button.active.massGo-active { background-color: var(--neo-accent-teal); } 
+        .neo-nav-button.active.settings-active { background-color: var(--neo-accent-indigo); } 
         .neo-nav-button.active.howToUse-active { background-color: #78909C; }
         
         .neo-main-content-area {
@@ -142,6 +149,7 @@
                               linear-gradient(45deg, transparent 75%, var(--neo-bg-alt) 75%),
                               linear-gradient(-45deg, transparent 75%, var(--neo-bg-alt) 75%);
             background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            transition: background-color 0.3s ease; /* For theme background pattern */
         }
         .main-content-header {
             margin-bottom: var(--neo-spacing-unit); background-color: var(--neo-bg-main);
@@ -157,17 +165,17 @@
         .neo-content-pane { display: none; flex-direction: column; gap: var(--neo-spacing-unit); flex-grow: 1; }
         .neo-content-pane.active { display: flex; }
 
-        .neo-card, .form-section, .status-section, .recipients-section, .attachment-section, .tool-section, .how-to-use-section {
+        .neo-card, .form-section, .status-section, .recipients-section, .attachment-section, .tool-section, .how-to-use-section, .settings-section {
             background-color: var(--neo-bg-main); border: var(--neo-border-thickness) solid var(--neo-border-color);
             padding: var(--neo-section-padding); box-shadow: var(--neo-shadow);
             border-radius: var(--neo-border-radius-md);
         }
-        .neo-card h2, .form-section h2, .status-section h2, .recipients-section h2, .attachment-section h2, .tool-section h2, .how-to-use-section h2 {
+        .neo-card h2, .form-section h2, .status-section h2, .recipients-section h2, .attachment-section h2, .tool-section h2, .how-to-use-section h2, .settings-section h2 {
             font-size: 1.3em; font-weight: 700; margin-bottom: var(--neo-spacing-unit);
             padding-bottom: 10px; border-bottom: var(--neo-border-thickness) dashed var(--neo-border-color);
             display: flex; align-items: center; gap: 10px;
         }
-        .neo-card h2 .section-icon, .form-section h2 .section-icon { font-size: 1.2em; }
+        .neo-card h2 .section-icon, .form-section h2 .section-icon, .settings-section h2 .section-icon { font-size: 1.2em; }
 
         .form-row { display: grid; grid-template-columns: 1fr; gap: var(--neo-spacing-unit); }
         @media (min-width: 768px) { .form-row { grid-template-columns: 1fr 1fr; } }
@@ -189,7 +197,9 @@
         }
         textarea { resize: vertical; min-height: 100px; max-height: 250px; }
         .neo-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 20px; padding-right: 35px; }
-        
+        /* Adjust select arrow color for themes */
+        body.theme-dark-mode .neo-select, body.theme-midnight-blue .neo-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23E0E0E0'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); }
+
         .tooltip {
             position: relative; display: inline-block; margin-left: 8px; cursor: help;
         }
@@ -207,7 +217,7 @@
         .tooltip .tooltiptext {
             visibility: hidden; width: 280px; background-color: var(--neo-bg-main);
             color: var(--neo-text-secondary); text-align: left; border-radius: var(--neo-border-radius-sm);
-            padding: 12px 15px; position: absolute; z-index: 10;
+            padding: 12px 15px; position: absolute; z-index: 1000; /* Higher z-index */
             bottom: 135%; left: 50%; margin-left: -140px; 
             opacity: 0; transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
             border: var(--neo-border-thickness) solid var(--neo-border-color);
@@ -229,7 +239,7 @@
             border-radius: var(--neo-border-radius-md);
         }
         .editor-wrapper:focus-within { border-color: var(--neo-accent-blue); box-shadow: var(--neo-shadow-offset) var(--neo-shadow-offset) 0px var(--neo-accent-blue); }
-        #editor { height: 250px; font-family: var(--neo-font-primary); font-size: 1em; }
+        #editor, #massGoEditor { height: 250px; font-family: var(--neo-font-primary); font-size: 1em; }
         .ql-toolbar.ql-snow { border-bottom: var(--neo-border-thickness) solid var(--neo-border-color); background-color: var(--neo-bg-alt); padding: 8px; }
         .ql-container.ql-snow { border: none; flex-grow: 1; }
         .ql-editor { min-height: 180px; padding: 15px; color: var(--neo-text-primary); background-color: var(--neo-bg-main); }
@@ -237,9 +247,17 @@
         .ql-snow .ql-toolbar button:hover, .ql-snow .ql-toolbar .ql-picker-label:hover { background-color: var(--neo-accent-yellow); border-color: var(--neo-border-color); color: var(--neo-text-on-accent); }
         .ql-snow .ql-toolbar button.ql-active, .ql-snow .ql-toolbar .ql-picker-label.ql-active { background-color: var(--neo-accent-blue); border-color: var(--neo-border-color); color: var(--neo-text-on-accent-light); }
         .ql-snow .ql-tooltip { background-color: var(--neo-bg-main); border: var(--neo-border-thickness) solid var(--neo-border-color); color: var(--neo-text-primary); box-shadow: var(--neo-shadow); border-radius: var(--neo-border-radius-md); padding: 8px; }
+        body.theme-dark-mode .ql-snow .ql-stroke, body.theme-midnight-blue .ql-snow .ql-stroke { stroke: var(--neo-text-primary); }
+        body.theme-dark-mode .ql-snow .ql-picker-label, body.theme-midnight-blue .ql-snow .ql-picker-label { color: var(--neo-text-primary); }
+        body.theme-dark-mode .ql-snow .ql-active .ql-stroke, body.theme-midnight-blue .ql-snow .ql-active .ql-stroke { stroke: var(--neo-text-on-accent-light); }
+        body.theme-dark-mode .ql-snow .ql-active .ql-picker-label, body.theme-midnight-blue .ql-snow .ql-active .ql-picker-label { color: var(--neo-text-on-accent-light); }
+
 
         .drop-zone { border: var(--neo-border-thickness) dashed var(--neo-border-color); padding: 30px; text-align: center; cursor: pointer; transition: all 0.2s ease; background: var(--neo-bg-alt); border-radius: var(--neo-border-radius-md); }
         .drop-zone:hover, .drop-zone.dragover { border-color: var(--neo-accent-blue); background: #E3F2FD; border-style: solid; }
+        body.theme-dark-mode .drop-zone:hover, body.theme-dark-mode .drop-zone.dragover,
+        body.theme-midnight-blue .drop-zone:hover, body.theme-midnight-blue .drop-zone.dragover { background: #334B60; }
+
         .drop-zone .drop-zone-content .drop-zone-icon { font-size: 2.8rem; margin-bottom: 8px; line-height: 1; color: var(--neo-accent-blue); }
         .drop-zone .drop-zone-content h4 { margin-bottom: 5px; font-weight: 700; font-size: 1.05em;}
         .drop-zone .drop-zone-content p { font-size: 0.85em; color: var(--neo-text-tertiary); }
@@ -263,8 +281,9 @@
         .tab-content-inner.active { display: flex; }
         .recipients-list-display { margin-top: 15px; padding: 15px; background-color: var(--neo-bg-alt); border: var(--neo-border-thickness) solid var(--neo-border-color); min-height: 100px; max-height: 200px; overflow-y: auto; flex-grow: 1; border-radius: var(--neo-border-radius-sm); }
         .recipients-list-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #CCC; font-size: 0.9em; }
+        body.theme-dark-mode .recipients-list-item, body.theme-midnight-blue .recipients-list-item { border-bottom: 1px dashed var(--neo-border-color); }
         
-        .email-count { 
+        .email-count, .credential-count { 
             background: var(--neo-accent-yellow); color: var(--neo-text-on-accent); 
             padding: 8px 15px; border: var(--neo-border-thickness) solid var(--neo-border-color); 
             box-shadow: var(--neo-shadow-small); font-weight: 700; display: inline-block; 
@@ -275,12 +294,12 @@
             padding: 10px 20px; font-size: 0.95em; font-weight: 700;
             border: var(--neo-border-thickness) solid var(--neo-border-color);
             box-shadow: var(--neo-shadow); cursor: pointer; text-align: center;
-            transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease, filter 0.15s ease;
+            transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease, filter 0.15s ease, color 0.15s ease;
             display: inline-flex; align-items: center; gap: 8px;
             text-decoration: none; border-radius: var(--neo-border-radius-sm);
         }
-        .neo-button:hover { transform: translate(var(--neo-shadow-hover-intensity), var(--neo-shadow-hover-intensity)); box-shadow: calc(var(--neo-shadow-offset) - var(--neo-shadow-hover-intensity)) calc(var(--neo-shadow-offset) - var(--neo-shadow-hover-intensity)) 0px var(--neo-border-color); filter: brightness(1.05); }
-        .neo-button:active { transform: translate(var(--neo-shadow-offset), var(--neo-shadow-offset)); box-shadow: none; filter: brightness(0.95); }
+        .neo-button:hover:not(:disabled) { transform: translate(var(--neo-shadow-hover-intensity), var(--neo-shadow-hover-intensity)); box-shadow: calc(var(--neo-shadow-offset) - var(--neo-shadow-hover-intensity)) calc(var(--neo-shadow-offset) - var(--neo-shadow-hover-intensity)) 0px var(--neo-border-color); filter: brightness(1.05); }
+        .neo-button:active:not(:disabled) { transform: translate(var(--neo-shadow-offset), var(--neo-shadow-offset)); box-shadow: none; filter: brightness(0.95); }
         .neo-button:disabled { background-color: #BDBDBD !important; color: #757575 !important; border-color: #757575 !important; box-shadow: var(--neo-shadow-offset) var(--neo-shadow-offset) 0px #757575; cursor: not-allowed; transform: none; filter: none;}
         .neo-button.neo-button-primary { background-color: var(--neo-accent-blue); color: var(--neo-text-on-accent-light); }
         .neo-button.neo-button-primary:hover:not(:disabled) { background-color: #0056b3; }
@@ -295,23 +314,36 @@
         .neo-button.neo-button-orange { background-color: var(--neo-accent-orange); color: var(--neo-text-on-accent); }
         .neo-button.neo-button-orange:hover:not(:disabled) { background-color: #e0620e; }
         .neo-button.neo-button-teal { background-color: var(--neo-accent-teal); color: var(--neo-text-on-accent-light); }
-        .neo-button.neo-button-teal:hover:not(:disabled) { background-color: #138496; }
+        .neo-button.neo-button-teal:hover:not(:disabled) { background-color: #138496; } 
         .neo-button.neo-button-cyan { background-color: var(--neo-accent-cyan); color: var(--neo-text-on-accent-light); }
         .neo-button.neo-button-cyan:hover:not(:disabled) { background-color: #117a8b; }
+        .neo-button.neo-button-indigo { background-color: var(--neo-accent-indigo); color: var(--neo-text-on-accent-light); } 
+        .neo-button.neo-button-indigo:hover:not(:disabled) { background-color: #510bc4;} 
+        .neo-button.neo-button-lime { background-color: var(--neo-accent-lime); color: var(--neo-text-on-accent); } 
+        .neo-button.neo-button-lime:hover:not(:disabled) { background-color: #82a31e;} 
+
         .action-buttons { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--neo-spacing-unit); }
         .remove-attachment, .remove-recipient-btn { padding: 5px 10px; font-size: 0.8em; font-weight: 600; }
         
-        .status-message { font-size: 1.1em; text-align: center; font-weight: 700; margin-bottom: 10px; padding: 10px; border: var(--neo-border-thickness) solid var(--neo-border-color); background-color: var(--neo-bg-alt); border-radius: var(--neo-border-radius-md); }
+        .status-message { font-size: 1.1em; text-align: center; font-weight: 700; margin-bottom: 10px; padding: 10px; border: var(--neo-border-thickness) solid var(--neo-border-color); background-color: var(--neo-bg-alt); border-radius: var(--neo-border-radius-md); display:none; /* Hidden by default */ }
         .status-message.info { color: var(--neo-accent-blue); border-color: var(--neo-accent-blue); background-color: #E3F2FD;}
         .status-message.error { color: var(--neo-accent-red); border-color: var(--neo-accent-red); background-color: #FFEBEE; }
         .status-message.success { color: var(--neo-accent-green); border-color: var(--neo-accent-green); background-color: #E8F5E9;}
+        .status-message.warning { color: var(--neo-text-on-accent); border-color: var(--neo-accent-yellow); background-color: #FFF9C4;} /* Yellow for warnings */
+        body.theme-dark-mode .status-message.info, body.theme-midnight-blue .status-message.info { background-color: #01579B; color: #E1F5FE; border-color: var(--neo-accent-blue); }
+        body.theme-dark-mode .status-message.error, body.theme-midnight-blue .status-message.error { background-color: #B71C1C; color: #FFEBEE; border-color: var(--neo-accent-red); }
+        body.theme-dark-mode .status-message.success, body.theme-midnight-blue .status-message.success { background-color: #1B5E20; color: #E8F5E9; border-color: var(--neo-accent-green); }
+        body.theme-dark-mode .status-message.warning, body.theme-midnight-blue .status-message.warning { background-color: #F57F17; color: #FFFDE7; border-color: var(--neo-accent-yellow); }
+
+
         .progress-bar-container { width: 100%; background-color: var(--neo-bg-alt); border: var(--neo-border-thickness) solid var(--neo-border-color); height: 26px; overflow: hidden; border-radius: var(--neo-border-radius-md); }
         .progress-bar { height: 100%; width: 0%; background-color: var(--neo-accent-green); transition: width 0.4s ease-in-out; display: flex; align-items: center; justify-content: center; color: var(--neo-text-on-accent-light); font-weight: 600; font-size: 0.85em; }
         .results-log { background-color: #263238; color: #ECEFF1; padding: 15px; border: var(--neo-border-thickness) solid var(--neo-border-color); font-family: 'Courier New', Courier, monospace; font-size: 0.85em; white-space: pre-wrap; flex-grow: 1; overflow-y: auto; min-height: 150px; line-height: 1.5; box-shadow: inset 2px 2px 0px rgba(0,0,0,0.2); border-radius: var(--neo-border-radius-md); }
-        .results-log .success { color: #A5D6A7; } .results-log .error { color: #EF9A9A; } .results-log .info { color: #90CAF9; } .results-log .warning { color: #FFD54F; } /* Added warning color for log */
+        .results-log .success { color: #A5D6A7; } .results-log .error { color: #EF9A9A; } .results-log .info { color: #90CAF9; } .results-log .warning { color: #FFD54F; }
+        body:not(.theme-default) .results-log { border-color: var(--neo-border-color); } /* ensure results log border updates with theme */
+
         .summary-message { font-size: 1em; color: var(--neo-text-primary); text-align: center; font-weight: 600; padding: 12px; border: var(--neo-border-thickness) solid var(--neo-border-color); margin-top: 10px; background-color: var(--neo-bg-alt); border-radius: var(--neo-border-radius-md); }
         
-        /* Tool, HowTo Sections */
         .tool-section { margin-bottom: var(--neo-spacing-unit); }
         .tool-section .input-area, .tool-section .output-area {
             margin-bottom: var(--neo-spacing-unit);
@@ -322,7 +354,7 @@
             color: var(--neo-text-primary);
             margin-bottom: 12px;
             padding-bottom: 8px;
-            border-bottom: var(--neo-border-thickness) dashed var(--neo-bg-alt); /* Softer dash */
+            border-bottom: var(--neo-border-thickness) dashed var(--neo-bg-alt); 
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -339,7 +371,7 @@
             margin-left: 10px;
         }
 
-        .dork-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 5px; /* Reduced top margin as header provides spacing */ }
+        .dork-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 5px; }
         
         #generatedDorkOutput, #extractedEmailsOutput {
             background-color: var(--neo-bg-alt); 
@@ -347,9 +379,8 @@
             padding: 15px; min-height: 100px; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
             white-space: pre-wrap; word-break: break-all; font-size: 0.9em;
             border-radius: var(--neo-border-radius-sm); 
-            /* margin-top: 5px; No longer needed due to .area-header */
             line-height: 1.6; color: var(--neo-text-secondary); position: relative;
-            box-shadow: inset 2px 2px 3px rgba(0,0,0,0.06); /* Subtle inset shadow */
+            box-shadow: inset 2px 2px 3px rgba(0,0,0,0.06); 
         }
 
         .output-actions { display: flex; justify-content: flex-end; margin-top: 10px; gap: 8px; }
@@ -365,12 +396,16 @@
         
         .how-to-use-section p, .how-to-use-section li { margin-bottom: 12px; line-height: 1.75; font-size: 0.95em; color: var(--neo-text-secondary);}
         .how-to-use-section h3 { font-size: 1.1em; margin-top: var(--neo-spacing-unit); margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 8px; }
+        body.theme-dark-mode .how-to-use-section h3, body.theme-midnight-blue .how-to-use-section h3 { border-bottom: 1px solid var(--neo-border-color); }
         .how-to-use-section h3 .section-icon { font-size: 1.1em; color: var(--neo-accent-teal); }
         .how-to-use-section ul, .how-to-use-section ol { margin-left: 25px; margin-bottom: 15px; }
         .how-to-use-section strong { font-weight: 600; color: var(--neo-text-primary); }
         .how-to-use-section code { background-color: var(--neo-bg-alt); padding: 2px 6px; border: 1px solid #ccc; border-radius: var(--neo-border-radius-sm); font-family: Consolas, Menlo, Monaco, Courier, monospace; font-size: 0.85em; color: var(--neo-accent-red); }
+        body.theme-dark-mode .how-to-use-section code, body.theme-midnight-blue .how-to-use-section code { border-color: var(--neo-border-color); }
         .how-to-use-section pre { background-color: #263238; color: #ECEFF1; padding: 15px; border: var(--neo-border-thickness) solid var(--neo-border-color); border-radius: var(--neo-border-radius-md); overflow-x: auto; margin-bottom: 15px; font-family: Consolas, Menlo, Monaco, Courier, monospace; font-size: 0.85em; }
-        .how-to-use-section .highlight { background-color: var(--neo-accent-yellow); padding: 1px 5px; border-radius: var(--neo-border-radius-sm); border: 1px solid var(--neo-border-color); font-weight: 600; }
+        body:not(.theme-default) .how-to-use-section pre { border-color: var(--neo-border-color); }
+
+        .how-to-use-section .highlight { background-color: var(--neo-accent-yellow); padding: 1px 5px; border-radius: var(--neo-border-radius-sm); border: 1px solid var(--neo-border-color); font-weight: 600; color: var(--neo-text-on-accent); }
         .how-to-use-section a.neo-link { color: var(--neo-accent-blue); text-decoration: none; font-weight: 600; border-bottom: 2px solid transparent; transition: border-color 0.2s; }
         .how-to-use-section a.neo-link:hover { border-bottom-color: var(--neo-accent-blue); }
 
@@ -392,6 +427,50 @@
         .neo-toast.warning { background-color: var(--neo-accent-yellow); color: var(--neo-text-on-accent); }
         .neo-toast.error { background-color: var(--neo-accent-red); }
 
+        .credential-upload-group {
+            display: flex; flex-direction: column; gap: 10px;
+            align-items: flex-start;
+        }
+        .credential-upload-group .neo-button {
+             margin-bottom: 5px;
+        }
+         .credential-count {
+            margin-top: 0; 
+            padding: 6px 12px; font-size: 0.9em;
+            background-color: var(--neo-bg-alt); 
+            color: var(--neo-text-secondary);
+            border: 1.5px dashed var(--neo-border-color);
+            box-shadow: none;
+        }
+        
+        /* AI Writer Modal */
+        #aiWriterModal {
+            display: none; position: fixed; z-index: 1001; left: 0; top: 0;
+            width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);
+            align-items: center; justify-content: center; padding:20px;
+        }
+        .ai-modal-content {
+            background-color: var(--neo-bg-main); margin: auto; padding: var(--neo-section-padding);
+            border: var(--neo-border-thickness) solid var(--neo-border-color); width: 90%; max-width: 700px;
+            box-shadow: var(--neo-shadow-offset) var(--neo-shadow-offset) 10px var(--neo-accent-indigo);
+            border-radius: var(--neo-border-radius-md); display: flex; flex-direction: column; gap: 15px;
+            max-height: 90vh;
+        }
+        .ai-modal-content h3 {
+            font-size: 1.4em; font-weight: 700; color: var(--neo-accent-indigo); text-align: center;
+            margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        #aiWriterPrompt { 
+            min-height: 120px; white-space: pre-wrap; overflow-y: auto; 
+            background-color: var(--neo-bg-alt); padding:10px; 
+            border-radius:var(--neo-border-radius-sm); border:1.5px solid var(--neo-border-color); 
+            font-family:var(--neo-font-primary); font-size:0.95em;
+            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.05);
+            max-height: 45vh; 
+        }
+        .ai-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+
+
         @media (max-width: 1024px) {
             .neo-dashboard-container.visible { flex-direction: column; } 
             .neo-dashboard-container { margin: 10px; }
@@ -411,20 +490,255 @@
             .main-content-header { padding: 15px; }
             #current-section-title { font-size: 1.3em; }
             .form-row { grid-template-columns: 1fr; }
-            .neo-card h2, .form-section h2, .status-section h2, .recipients-section h2, .attachment-section h2, .tool-section h2, .how-to-use-section h2 { font-size: 1.15em; }
+            .neo-card h2, .form-section h2, .status-section h2, .recipients-section h2, .attachment-section h2, .tool-section h2, .how-to-use-section h2, .settings-section h2 { font-size: 1.15em; }
             .action-buttons { flex-direction: column; }
             .action-buttons .neo-button { width: 100%; }
             .recipients-tabs { flex-direction: column; }
             .tab-btn { border-right: none; border-bottom: var(--neo-border-thickness) solid var(--neo-border-color); }
             .tab-btn:last-child { border-bottom: none; }
             .ql-toolbar.ql-snow { overflow-x: auto; overflow-y: hidden; flex-wrap: nowrap; padding: 6px 2px; }
-            #editor { height: 180px; } .ql-editor { min-height: 120px; }
+            #editor, #massGoEditor { height: 180px; } .ql-editor { min-height: 120px; }
             .dork-options { grid-template-columns: 1fr; }
             #neo-toast-container { right: 10px; bottom: 10px; max-width: calc(100% - 20px); }
             .startup-content { padding: var(--neo-section-padding); width: 90%;}
             .startup-content h1 {font-size: 1.5em;}
+            .ai-modal-content { width: 95%; padding: calc(var(--neo-section-padding) * 0.8); }
         }
-        /* --- End Neobrutalist Design Pro CSS (No History) --- */
+        /* --- End Neobrutalist Design Pro CSS --- */
+
+        /* --- THEME DEFINITIONS --- */
+        .theme-dark-mode {
+            --neo-bg-main: #2D2D2D;
+            --neo-bg-alt: #3C3C3C;
+            --neo-bg-body: #1E1E1E;
+            --neo-bg-sidebar: #252525;
+            --neo-text-primary: #E0E0E0;
+            --neo-text-secondary: #BDBDBD;
+            --neo-text-tertiary: #9E9E9E;
+            --neo-text-on-accent: #000000; /* Default, can be overridden by accent */
+            --neo-text-on-accent-light: #FFFFFF;
+            --neo-border-color: #555555;
+            --neo-accent-yellow: #FFD600;
+            --neo-accent-blue: #29B6F6;
+            --neo-accent-pink: #F06292;
+            --neo-accent-green: #69F0AE;
+            --neo-accent-red: #EF5350;
+            --neo-accent-purple: #BA68C8;
+            --neo-accent-orange: #FFB74D;
+            --neo-accent-teal: #4DB6AC;
+            --neo-accent-cyan: #4DD0E1;
+            --neo-accent-indigo: #7986CB;
+            --neo-accent-lime: #DCE775;
+        }
+        .theme-ocean-breeze {
+            --neo-bg-main: #E0F7FA;
+            --neo-bg-alt: #B2EBF2;
+            --neo-bg-body: #A0D2DB;
+            --neo-bg-sidebar: #C8F0F8;
+            --neo-text-primary: #004D40;
+            --neo-text-secondary: #00695C;
+            --neo-text-tertiary: #00796B;
+            --neo-text-on-accent: #000000;
+            --neo-text-on-accent-light: #FFFFFF;
+            --neo-border-color: #00796B;
+            --neo-accent-yellow: #FFEB3B;
+            --neo-accent-blue: #03A9F4;
+            --neo-accent-pink: #EC407A;
+            --neo-accent-green: #4CAF50;
+            --neo-accent-red: #F44336;
+            --neo-accent-purple: #9C27B0;
+            --neo-accent-orange: #FF9800;
+            --neo-accent-teal: #009688;
+            --neo-accent-cyan: #00BCD4;
+            --neo-accent-indigo: #3F51B5;
+            --neo-accent-lime: #CDDC39;
+        }
+        .theme-forest-green {
+            --neo-bg-main: #E8F5E9;
+            --neo-bg-alt: #C8E6C9;
+            --neo-bg-body: #A5D6A7;
+            --neo-bg-sidebar: #D7ECD9;
+            --neo-text-primary: #1B5E20;
+            --neo-text-secondary: #2E7D32;
+            --neo-text-tertiary: #388E3C;
+            --neo-text-on-accent: #FFFFFF;
+            --neo-text-on-accent-light: #000000;
+            --neo-border-color: #2E7D32;
+            --neo-accent-yellow: #FFC107; /* Amber */
+            --neo-accent-blue: #1E88E5; /* Blue */
+            --neo-accent-pink: #D81B60; /* Pink */
+            --neo-accent-green: #43A047; /* Main Green */
+            --neo-accent-red: #E53935; /* Red */
+            --neo-accent-purple: #8E24AA; /* Purple */
+            --neo-accent-orange: #FB8C00; /* Orange */
+            --neo-accent-teal: #00897B; /* Teal */
+            --neo-accent-cyan: #00ACC1; /* Cyan */
+            --neo-accent-indigo: #5E35B1; /* Indigo */
+            --neo-accent-lime: #C0CA33; /* Lime */
+        }
+        .theme-royal-purple {
+            --neo-bg-main: #F3E5F5;
+            --neo-bg-alt: #E1BEE7;
+            --neo-bg-body: #CE93D8;
+            --neo-bg-sidebar: #EADFF2;
+            --neo-text-primary: #4A148C;
+            --neo-text-secondary: #6A1B9A;
+            --neo-text-tertiary: #7B1FA2;
+            --neo-text-on-accent: #FFFFFF;
+            --neo-text-on-accent-light: #000000;
+            --neo-border-color: #6A1B9A;
+            --neo-accent-yellow: #FFD700; /* Gold */
+            --neo-accent-blue: #7E57C2; /* Deep Purple Light */
+            --neo-accent-pink: #F48FB1; /* Light Pink */
+            --neo-accent-green: #81C784; /* Light Green */
+            --neo-accent-red: #E57373; /* Light Red */
+            --neo-accent-purple: #AB47BC; /* Main Purple */
+            --neo-accent-orange: #FFB74D; /* Light Orange */
+            --neo-accent-teal: #4DB6AC; /* Teal */
+            --neo-accent-cyan: #4DD0E1; /* Cyan */
+            --neo-accent-indigo: #5C6BC0; /* Indigo */
+            --neo-accent-lime: #D4E157; /* Lime */
+        }
+        .theme-sunset-orange {
+            --neo-bg-main: #FFF3E0;
+            --neo-bg-alt: #FFE0B2;
+            --neo-bg-body: #FFCC80;
+            --neo-bg-sidebar: #FFF8E1;
+            --neo-text-primary: #E65100;
+            --neo-text-secondary: #F57C00;
+            --neo-text-tertiary: #FB8C00;
+            --neo-text-on-accent: #000000;
+            --neo-text-on-accent-light: #FFFFFF;
+            --neo-border-color: #F57C00;
+            --neo-accent-yellow: #FFFF00; /* Bright Yellow */
+            --neo-accent-blue: #FF7043; /* Deep Orange Light */
+            --neo-accent-pink: #EC407A;
+            --neo-accent-green: #FFB74D; /* Light Orange as Green */
+            --neo-accent-red: #D32F2F; /* Dark Red */
+            --neo-accent-purple: #BF360C; /* Deep Orange Dark */
+            --neo-accent-orange: #FF8A65; /* Main Orange */
+            --neo-accent-teal: #FFCA28; /* Amber as Teal */
+            --neo-accent-cyan: #FFA726; /* Orange Light as Cyan */
+            --neo-accent-indigo: #E64A19; /* Deep Orange Darker */
+            --neo-accent-lime: #FFF176; /* Pale Yellow */
+        }
+        .theme-monochrome-gray {
+            --neo-bg-main: #ECEFF1;
+            --neo-bg-alt: #CFD8DC;
+            --neo-bg-body: #B0BEC5;
+            --neo-bg-sidebar: #E0E0E0;
+            --neo-text-primary: #263238;
+            --neo-text-secondary: #455A64;
+            --neo-text-tertiary: #607D8B;
+            --neo-text-on-accent: #FFFFFF;
+            --neo-text-on-accent-light: #000000;
+            --neo-border-color: #546E7A;
+            --neo-accent-yellow: #1976D2; /* Chosen Accent: Blue */
+            --neo-accent-blue: #1976D2;
+            --neo-accent-pink: #1976D2;
+            --neo-accent-green: #1976D2;
+            --neo-accent-red: #D32F2F; /* Error color can remain distinct */
+            --neo-accent-purple: #1976D2;
+            --neo-accent-orange: #1976D2;
+            --neo-accent-teal: #1976D2;
+            --neo-accent-cyan: #1976D2;
+            --neo-accent-indigo: #1976D2;
+            --neo-accent-lime: #1976D2;
+        }
+        .theme-cherry-blossom {
+            --neo-bg-main: #FFF0F5; /* Lavender Blush */
+            --neo-bg-alt: #FFE4E1; /* Misty Rose */
+            --neo-bg-body: #FFC0CB; /* Pink */
+            --neo-bg-sidebar: #FFF5FA;
+            --neo-text-primary: #8B008B; /* Dark Magenta */
+            --neo-text-secondary: #C71585; /* Medium Violet Red */
+            --neo-text-tertiary: #DB7093; /* Pale Violet Red */
+            --neo-text-on-accent: #000000;
+            --neo-text-on-accent-light: #FFFFFF;
+            --neo-border-color: #C71585;
+            --neo-accent-yellow: #FFB6C1; /* Light Pink */
+            --neo-accent-blue: #FF69B4; /* Hot Pink */
+            --neo-accent-pink: #FF1493; /* Deep Pink */
+            --neo-accent-green: #90EE90; /* Light Green */
+            --neo-accent-red: #DC143C; /* Crimson */
+            --neo-accent-purple: #DA70D6; /* Orchid */
+            --neo-accent-orange: #FFA07A; /* Light Salmon */
+            --neo-accent-teal: #AFEEEE; /* Pale Turquoise */
+            --neo-accent-cyan: #E0FFFF; /* Light Cyan */
+            --neo-accent-indigo: #BA55D3; /* Medium Orchid */
+            --neo-accent-lime: #F0E68C; /* Khaki */
+        }
+        .theme-desert-sand {
+            --neo-bg-main: #F5F5DC; /* Beige */
+            --neo-bg-alt: #FAF0E6; /* Linen */
+            --neo-bg-body: #F0E68C; /* Khaki */
+            --neo-bg-sidebar: #FFF8DC; /* Cornsilk */
+            --neo-text-primary: #8B4513; /* Saddle Brown */
+            --neo-text-secondary: #A0522D; /* Sienna */
+            --neo-text-tertiary: #CD853F; /* Peru */
+            --neo-text-on-accent: #000000;
+            --neo-text-on-accent-light: #FFFFFF;
+            --neo-border-color: #A0522D;
+            --neo-accent-yellow: #FFDEAD; /* Navajo White */
+            --neo-accent-blue: #B8860B; /* DarkGoldenRod */
+            --neo-accent-pink: #BC8F8F; /* RosyBrown */
+            --neo-accent-green: #8FBC8F; /* DarkSeaGreen */
+            --neo-accent-red: #CD5C5C; /* IndianRed */
+            --neo-accent-purple: #D2B48C; /* Tan */
+            --neo-accent-orange: #FFA500; /* Orange */
+            --neo-accent-teal: #20B2AA; /* LightSeaGreen (Oasis Accent) */
+            --neo-accent-cyan: #AFEEEE; /* PaleTurquoise */
+            --neo-accent-indigo: #DAA520; /* GoldenRod */
+            --neo-accent-lime: #EEE8AA; /* PaleGoldenRod */
+        }
+        .theme-midnight-blue {
+            --neo-bg-main: #1C2331;
+            --neo-bg-alt: #2A3B4D;
+            --neo-bg-body: #0A192F;
+            --neo-bg-sidebar: #16213E;
+            --neo-text-primary: #CCD6F6;
+            --neo-text-secondary: #A8B2D1;
+            --neo-text-tertiary: #8892B0;
+            --neo-text-on-accent: #0A192F;
+            --neo-text-on-accent-light: #CCD6F6;
+            --neo-border-color: #52698E;
+            --neo-accent-yellow: #FFCA28; /* Amber */
+            --neo-accent-blue: #64FFDA; /* Bright Teal/Aqua */
+            --neo-accent-pink: #F06292;
+            --neo-accent-green: #4CAF50;
+            --neo-accent-red: #EF5350;
+            --neo-accent-purple: #7E57C2;
+            --neo-accent-orange: #FF9800;
+            --neo-accent-teal: #26A69A;
+            --neo-accent-cyan: #00ACC1;
+            --neo-accent-indigo: #5C6BC0;
+            --neo-accent-lime: #AFB42B;
+        }
+        .theme-minty-fresh {
+            --neo-bg-main: #F0FFF0; /* Honeydew */
+            --neo-bg-alt: #E0EEE0; /* Pale Green */
+            --neo-bg-body: #C1FFC1; /* Mint Cream Light */
+            --neo-bg-sidebar: #F5FFFA; /* Mint Cream */
+            --neo-text-primary: #006400; /* Dark Green */
+            --neo-text-secondary: #228B22; /* Forest Green */
+            --neo-text-tertiary: #3CB371; /* Medium Sea Green */
+            --neo-text-on-accent: #000000;
+            --neo-text-on-accent-light: #FFFFFF;
+            --neo-border-color: #2E8B57; /* Sea Green */
+            --neo-accent-yellow: #ADFF2F; /* GreenYellow */
+            --neo-accent-blue: #AFEEEE; /* PaleTurquoise */
+            --neo-accent-pink: #FFB6C1; /* LightPink */
+            --neo-accent-green: #98FB98; /* PaleGreen */
+            --neo-accent-red: #FA8072; /* Salmon */
+            --neo-accent-purple: #9370DB; /* MediumPurple */
+            --neo-accent-orange: #FFA07A; /* LightSalmon */
+            --neo-accent-teal: #20B2AA; /* LightSeaGreen */
+            --neo-accent-cyan: #7FFFD4; /* Aquamarine */
+            --neo-accent-indigo: #87CEFA; /* LightSkyBlue */
+            --neo-accent-lime: #F0E68C; /* Khaki */
+        }
+
+
     </style>
 </head>
 <body>
@@ -455,14 +769,15 @@
     <div class="neo-dashboard-container">
         <aside class="neo-sidebar-left">
             <div class="neo-sidebar-header">
-                <h2><span class="app-icon">📮</span>Foundss Mail</h2>
-                <p>NeoPro Edition</p>
+                <h2><span class="app-icon">📮</span>Foundss</h2>
+                <p>Made by LEHK ❤️</p>
             </div>
             <nav class="neo-sidebar-nav">
                 <div class="nav-group-title">Main Actions</div>
                 <button class="neo-nav-button active compose-active" data-section="compose" data-icon="✏️" data-title="Compose Email">
                     <span class="neo-nav-icon">✏️</span> Compose
                 </button>
+                <!-- Read Emails Button Removed -->
                 <button class="neo-nav-button" data-section="recipients" data-icon="👥" data-title="Manage Recipients">
                     <span class="neo-nav-icon">👥</span> Recipients
                 </button>
@@ -471,6 +786,9 @@
                 </button>
 
                 <div class="nav-group-title">Productivity Tools</div>
+                <button class="neo-nav-button" data-section="massGo" data-icon="⚡" data-title="MassGo Campaigner">
+                    <span class="neo-nav-icon">⚡</span> MassGo
+                </button>
                 <button class="neo-nav-button" data-section="emailExtractor" data-icon="✂️" data-title="Email Extractor">
                     <span class="neo-nav-icon">✂️</span> Email Extractor
                 </button>
@@ -478,7 +796,10 @@
                     <span class="neo-nav-icon">🔍</span> Dork Generator
                 </button>
                 
-                <div class="nav-group-title">Support</div>
+                <div class="nav-group-title">Configuration & Support</div>
+                 <button class="neo-nav-button" data-section="settings" data-icon="⚙️" data-title="App Settings">
+                    <span class="neo-nav-icon">⚙️</span> Settings
+                </button>
                 <button class="neo-nav-button" data-section="howToUse" data-icon="❓" data-title="How to Use Guide">
                     <span class="neo-nav-icon">❓</span> How To Use
                 </button>
@@ -493,40 +814,31 @@
             <!-- Compose Pane -->
             <div id="compose" class="neo-content-pane active">
                 <div class="form-section">
-                    <h2><span class="section-icon">👤</span>Sender Information</h2>
+                     <h2><span class="section-icon">👤</span>Sender & Subject</h2>
                     <div class="form-row">
                         <div class="input-group">
-                            <label for="senderName">YOUR NAME:</label>
+                            <label for="senderName">YOUR NAME (Display Name):</label>
                             <input type="text" id="senderName" placeholder="E.g., Jane Doe" value="Foundss Mail NeoPro">
-                        </div>
-                        <div class="input-group">
-                            <label for="senderEmail">YOUR GMAIL EMAIL:</label>
-                            <input type="email" id="senderEmail" placeholder="your_actual_email@gmail.com" value="testfoundss@gmail.com">
-                        </div>
-                    </div>
-                    <div class="form-row" style="margin-top: var(--neo-spacing-unit);">
-                        <div class="input-group">
-                             <label for="senderPassword">GMAIL APP PASSWORD:
-                                <span class="tooltip" tabindex="0"> 
-                                    <span class="tooltip-icon">?</span>
-                                    <span class="tooltiptext">For Gmail, enable 2-Step Verification and generate a 16-character App Password in your Google Account security settings. This is NOT your regular Gmail password.</span>
-                                </span>
-                            </label>
-                            <input type="password" id="senderPassword" placeholder="16-character app password">
                         </div>
                         <div class="input-group">
                             <label for="emailSubject">EMAIL SUBJECT:</label>
                             <input type="text" id="emailSubject" placeholder="Compelling Email Subject Line" value="NeoPro Test: Enhanced Productivity Tools!">
                         </div>
                     </div>
+                     <p style="font-size:0.85em; color: var(--neo-text-tertiary); margin-top:10px;">
+                        Your Gmail Email and App Password for sending are configured in the <strong class="highlight" style="cursor:pointer;" onclick="document.querySelector('.neo-nav-button[data-section=\'settings\']').click()">⚙️ Settings</strong> tab.
+                    </p>
                 </div>
                 <div class="form-section" style="flex-grow: 1; display: flex; flex-direction: column;">
-                    <h2><span class="section-icon">✍️</span>Email Content</h2>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--neo-spacing-unit);">
+                        <h2 style="margin-bottom:0; border-bottom:none;"><span class="section-icon">✍️</span>Email Content</h2>
+                        <button id="aiWriteAssistantBtn" class="neo-button neo-button-indigo" style="padding: 8px 15px; font-size: 0.9em;">✨ AI Write Assistant</button>
+                    </div>
                     <div class="editor-wrapper" style="flex-grow: 1; display: flex; flex-direction: column;">
                         <div id="editor">
                             <p>Hello from the <strong>Foundss Mail NeoPro Dashboard</strong>!</p><p><br></p>
-                            <p>This version features enhanced UI for our popular productivity tools: the Email Extractor and Google Dork Generator. We've also improved the 'Stop Process' functionality for better user feedback during email sending.</p>
-                            <p>We hope these refinements make your experience even smoother!</p><p><br></p>
+                            <p>This version features an improved "Read Emails" section and AI-powered summarization. Remember to set your Primary Gmail credentials and Google AI Studio API Key in the Settings tab!</p>
+                            <p><br></p>
                             <p>Best Regards,<br>The Foundss Team</p>
                         </div>
                     </div>
@@ -546,6 +858,9 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Read Emails Pane Removed -->
+
 
             <!-- Recipients Pane -->
             <div id="recipients" class="neo-content-pane">
@@ -581,11 +896,14 @@
             <div id="send" class="neo-content-pane">
                 <div class="neo-card">
                     <h2><span class="section-icon">🕹️</span>Send Controls</h2>
+                    <p style="font-size:0.85em; color: var(--neo-text-tertiary); margin-bottom:10px; text-align:center;">
+                        Uses Gmail Email and App Password from <strong class="highlight" style="cursor:pointer;" onclick="document.querySelector('.neo-nav-button[data-section=\'settings\']').click()">⚙️ Settings</strong>.
+                    </p>
                     <div class="action-buttons" style="justify-content: center; margin-bottom: var(--neo-spacing-unit);"><button id="sendEmailsBtn" class="neo-button neo-button-success" style="font-size: 1.1em; padding: 12px 25px;">🚀 INITIATE SEND</button><button id="stopSendingBtn" class="neo-button neo-button-danger" style="font-size: 1.1em; padding: 12px 25px;" disabled>⏹️ STOP PROCESS</button></div>
                 </div>
                 <div class="status-section">
                     <h2><span class="section-icon">📊</span>Live Progress</h2>
-                    <div class="status-message info" id="statusMessage">READY TO SEND.</div>
+                    <div class="status-message info" id="statusMessage" style="display:block;">READY TO SEND.</div>
                     <div class="progress-bar-container"><div class="progress-bar" id="progressBar" style="width: 0%;">0%</div></div>
                 </div>
                 <div class="status-section" style="flex-grow: 1; display: flex; flex-direction: column;">
@@ -594,6 +912,124 @@
                     <div class="summary-message" id="summaryMessage">📊 Summary: 0 successful, 0 failed out of 0 total</div>
                 </div>
             </div>
+
+            <!-- MassGo Pane -->
+            <div id="massGo" class="neo-content-pane">
+                <div class="form-section">
+                    <h2><span class="section-icon">⚙️</span>MassGo Campaign Configuration</h2>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="massGoCampaignSenderName">CAMPAIGN SENDER NAME:</label>
+                            <input type="text" id="massGoCampaignSenderName" placeholder="E.g., Support Team" value="Foundss Mass Campaign">
+                        </div>
+                        <div class="input-group">
+                            <label for="massGoEmailSubject">CAMPAIGN EMAIL SUBJECT:</label>
+                            <input type="text" id="massGoEmailSubject" placeholder="MassGo Campaign Subject" value="Important Update for You">
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-top: var(--neo-spacing-unit);">
+                        <div class="input-group credential-upload-group">
+                            <label for="massGoAppPasswordsFileBtn">UPLOAD GMAIL APP PASSWORDS LIST (.TXT):
+                                <span class="tooltip" tabindex="0"> 
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltiptext">One app password per line. Must correspond line-by-line with the Sender Emails List.</span>
+                                </span>
+                            </label>
+                            <button id="massGoAppPasswordsFileBtn" class="neo-button neo-button-warning">🔑 Upload Passwords</button>
+                            <div id="massGoAppPasswordsCount" class="credential-count" style="display: none;">0 passwords loaded.</div>
+                        </div>
+                        <div class="input-group credential-upload-group">
+                            <label for="massGoSenderEmailsFileBtn">UPLOAD SENDER EMAILS LIST (.TXT):
+                                 <span class="tooltip" tabindex="0"> 
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltiptext">One Gmail address per line. Must correspond line-by-line with the App Passwords List.</span>
+                                </span>
+                            </label>
+                            <button id="massGoSenderEmailsFileBtn" class="neo-button neo-button-warning">📧 Upload Emails</button>
+                            <div id="massGoSenderEmailsCount" class="credential-count" style="display: none;">0 emails loaded.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section" style="flex-grow: 1; display: flex; flex-direction: column;">
+                    <h2><span class="section-icon">✍️</span>MassGo Email Content</h2>
+                    <div class="editor-wrapper" style="flex-grow: 1; display: flex; flex-direction: column;">
+                        <div id="massGoEditor">
+                            <p>Dear Valued Recipient,</p><p><br></p>
+                            <p>This is an important message from our MassGo campaign system. We're reaching out with updates and information we believe you'll find useful.</p>
+                            <p><br></p>
+                            <p>Thank you for your attention.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2><span class="section-icon">📎</span>MassGo Attachments</h2>
+                    <input type="file" id="massGoAttachmentsInput" multiple style="display: none;">
+                    <div class="drop-zone" id="massGoDropZone">
+                        <div class="drop-zone-content">
+                            <div class="drop-zone-icon">📤</div>
+                            <h4>Drop files here or click to browse</h4>
+                            <p>Supports all file types • Max 25MB per file</p>
+                        </div>
+                    </div>
+                    <div class="attachment-list" id="massGoAttachmentsList">
+                        <p class="no-items-message">No files attached yet for MassGo.</p>
+                    </div>
+                </div>
+                
+                <div class="recipients-section"> <!-- MassGo Recipients Section -->
+                    <h2><span class="section-icon">🎯</span>MassGo Recipients</h2>
+                    <div class="action-buttons" style="margin-bottom: var(--neo-spacing-unit); justify-content: flex-start;">
+                        <button id="massGoTransferRecipientsBtn" class="neo-button neo-button-primary">➡️ Transfer from Main List</button>
+                    </div>
+                    <div class="recipients-tabs" id="massGoRecipientsTabs">
+                        <button class="tab-btn active" data-tab-content="massGo-manual-entry">Manual Entry</button>
+                        <button class="tab-btn" data-tab-content="massGo-file-upload">File Upload</button>
+                    </div>
+                    <div id="massGo-manual-entry" class="tab-content-inner active">
+                        <div class="input-group">
+                            <label for="massGoRecipientsManual">Enter email addresses (one per line or comma/semicolon/space-separated):</label>
+                            <textarea id="massGoRecipientsManual" rows="5" placeholder="user1@example.com, user2@example.com..."></textarea>
+                        </div>
+                        <div class="action-buttons" style="margin-top: var(--neo-spacing-unit);"><button id="addMassGoManualEmailsBtn" class="neo-button neo-button-success">➕ Add These Emails (MassGo)</button></div>
+                    </div>
+                    <div id="massGo-file-upload" class="tab-content-inner">
+                        <p style="font-size: 0.9em; color: var(--neo-text-secondary); text-align: center; margin-bottom: var(--neo-spacing-unit);">Upload a .TXT or .CSV file for MassGo recipients.</p>
+                        <div class="action-buttons" style="margin-top: 0; justify-content: center;">
+                            <button id="loadMassGoTxtBtn" class="neo-button neo-button-warning">📄 Load from TXT (MassGo)</button>
+                            <button id="loadMassGoCsvBtn" class="neo-button neo-button-purple">📊 Load from CSV (MassGo)</button>
+                        </div>
+                    </div>
+                    <div class="email-count" id="massGoEmailCount" style="display: none;"><span id="massGoRecipientsCount">0</span> MassGo recipients ready</div>
+                </div>
+                 <div class="recipients-section" style="flex-grow: 1; display: flex; flex-direction: column;">
+                    <h2><span class="section-icon">📋</span>Current MassGo Recipients List</h2>
+                    <div class="recipients-list-display" id="massGoRecipientsList">
+                        <p class="no-items-message">No MassGo recipients added yet.</p>
+                    </div>
+                    <div class="action-buttons" style="margin-top: var(--neo-spacing-unit);"><button id="clearMassGoRecipientsBtn" class="neo-button neo-button-danger">🗑️ Clear All MassGo Recipients</button></div>
+                </div>
+
+                <div class="neo-card"> <!-- MassGo Send Controls -->
+                    <h2><span class="section-icon">🕹️</span>MassGo Send Controls</h2>
+                    <div class="action-buttons" style="justify-content: center; margin-bottom: var(--neo-spacing-unit);">
+                        <button id="initiateMassGoSendBtn" class="neo-button neo-button-teal" style="font-size: 1.1em; padding: 12px 25px;">🚀 INITIATE MASSGO SEND</button>
+                        <button id="stopMassGoBtn" class="neo-button neo-button-danger" style="font-size: 1.1em; padding: 12px 25px;" disabled>⏹️ STOP MASSGO PROCESS</button>
+                    </div>
+                </div>
+                <div class="status-section"> <!-- MassGo Status -->
+                    <h2><span class="section-icon">📊</span>MassGo Live Progress</h2>
+                    <div class="status-message info" id="massGoStatusMessage" style="display:block;">MASSGO READY.</div>
+                    <div class="progress-bar-container"><div class="progress-bar" id="massGoProgressBar" style="width: 0%; background-color: var(--neo-accent-teal);">0%</div></div>
+                </div>
+                <div class="status-section" style="flex-grow: 1; display: flex; flex-direction: column;"> <!-- MassGo Log -->
+                    <h2><span class="section-icon">📝</span>MassGo Results Log</h2>
+                    <pre id="massGoResultsLog" class="results-log"></pre>
+                    <div class="summary-message" id="massGoSummaryMessage">📊 MassGo Summary: 0 successful, 0 failed out of 0 total attempts.</div>
+                </div>
+            </div>
+
 
             <!-- Email Extractor Pane -->
             <div id="emailExtractor" class="neo-content-pane">
@@ -655,577 +1091,918 @@
                 </div>
             </div>
 
+            <!-- Settings Pane -->
+            <div id="settings" class="neo-content-pane">
+                <div class="settings-section">
+                    <h2><span class="section-icon">🔑</span>Primary Gmail & AI Configuration</h2>
+                     <p style="margin-bottom: var(--neo-spacing-unit); font-size: 0.9em; color: var(--neo-text-secondary);">
+                        Manage your primary Gmail account (for sending single emails) and your Google AI Studio API key. 
+                        These are stored locally in your browser.
+                    </p>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="settingsSenderEmail">YOUR GMAIL EMAIL (Primary Account):</label>
+                            <input type="email" id="settingsSenderEmail" placeholder="your_primary_email@gmail.com">
+                        </div>
+                        <div class="input-group">
+                             <label for="settingsSenderPassword">GMAIL APP PASSWORD (Primary Account):
+                                <span class="tooltip" tabindex="0"> 
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltiptext">Use a 16-character App Password from your Google Account security settings. This is NOT your regular Gmail password.</span>
+                                </span>
+                            </label>
+                            <input type="password" id="settingsSenderPassword" placeholder="16-character app password">
+                        </div>
+                    </div>
+                     <div class="action-buttons" style="margin-top:var(--neo-spacing-unit); margin-bottom:calc(var(--neo-spacing-unit)*1.5);">
+                        <button id="saveGmailCredentialsBtn" class="neo-button neo-button-success">💾 Save Gmail Credentials</button>
+                    </div>
+
+                    <hr style="border:none; border-top: var(--neo-border-thickness) dashed var(--neo-bg-alt); margin: var(--neo-spacing-unit) 0;">
+
+                    <div class="input-group" style="margin-bottom:var(--neo-spacing-unit); margin-top:calc(var(--neo-spacing-unit)*0.5);">
+                        <label for="googleAiStudioApiKey">GOOGLE AI STUDIO API KEY:
+                            <span class="tooltip" tabindex="0"> 
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltiptext">Get your API Key from Google AI Studio. Required for AI Email Writer.</span>
+                            </span>
+                        </label>
+                        <input type="password" id="googleAiStudioApiKey" placeholder="Enter your Google AI Studio API Key">
+                    </div>
+                    <div class="action-buttons">
+                        <button id="saveGoogleAiStudioApiKeyBtn" class="neo-button neo-button-indigo">💾 Save AI Studio Key</button>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2><span class="section-icon">🎨</span>Theme Selection</h2>
+                    <p style="margin-bottom: var(--neo-spacing-unit); font-size: 0.9em; color: var(--neo-text-secondary);">
+                        Choose your preferred look and feel for the dashboard. Your selection is saved locally.
+                    </p>
+                    <div class="input-group">
+                        <label for="themeSelectorDropdown">SELECT THEME:</label>
+                        <select id="themeSelectorDropdown" class="neo-select">
+                            <option value="default">Default Light</option>
+                            <option value="dark-mode">Dark Mode</option>
+                            <option value="ocean-breeze">Ocean Breeze</option>
+                            <option value="forest-green">Forest Green</option>
+                            <option value="royal-purple">Royal Purple</option>
+                            <option value="sunset-orange">Sunset Orange</option>
+                            <option value="monochrome-gray">Monochrome Gray</option>
+                            <option value="cherry-blossom">Cherry Blossom</option>
+                            <option value="desert-sand">Desert Sand</option>
+                            <option value="midnight-blue">Midnight Blue</option>
+                            <option value="minty-fresh">Minty Fresh</option>
+                        </select>
+                    </div>
+                    <div class="action-buttons" style="margin-top:var(--neo-spacing-unit);">
+                        <button id="saveThemeBtn" class="neo-button neo-button-primary">💾 Apply & Save Theme</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- How To Use Pane -->
             <div id="howToUse" class="neo-content-pane">
                 <div class="how-to-use-section">
                     <h2><span class="section-icon">📘</span>Getting Started with Foundss Mail NeoPro</h2>
                     <p>Welcome! This guide will help you get the most out of the Foundss Mail NeoPro dashboard.</p>
-                    <h3><span class="section-icon">🔑</span>1. Gmail App Password (Crucial!)</h3>
-                    <p>To send emails using your Gmail account, you <strong>MUST</strong> use an App Password. Your regular Gmail password will not work and will result in authentication errors.</p>
+                    
+                    <h3><span class="section-icon">⚙️</span>1. Initial Setup (Crucial!)</h3>
                     <ol>
-                        <li>Go to your Google Account: <a href="https://myaccount.google.com/" target="_blank" class="neo-link">myaccount.google.com</a>.</li>
-                        <li>Navigate to <span class="highlight">Security</span>.</li>
-                        <li>Under "Signing in to Google," if "2-Step Verification" is off, you need to turn it <span class="highlight">ON</span> first.</li>
-                        <li>Once 2-Step Verification is on, find and click on <span class="highlight">App passwords</span>.</li>
-                        <li>Select app: <span class="highlight">Mail</span>. Select device: <span class="highlight">Other (Custom name)</span>. Name it (e.g., "FoundssMailNeoPro").</li>
-                        <li>Click <span class="highlight">Generate</span>. Copy the <span class="highlight">16-character password</span>.</li>
-                        <li>Paste this into the "GMAIL APP PASSWORD" field in the "Compose" section.</li>
+                        <li>Navigate to the <span class="highlight">⚙️ Settings</span> tab.</li>
+                        <li><strong>Primary Gmail Account:</strong>
+                            <ul>
+                                <li>Enter "Your Gmail Email" (this will be your default sending address for single sends).</li>
+                                <li>Enter the "Gmail App Password" for this account. To get an App Password:
+                                    <ol type="a">
+                                        <li>Go to your Google Account: <a href="https://myaccount.google.com/" target="_blank" class="neo-link">myaccount.google.com</a>.</li>
+                                        <li>Navigate to <span class="highlight">Security</span>.</li>
+                                        <li>Ensure "2-Step Verification" is <span class="highlight">ON</span>.</li>
+                                        <li>Click on <span class="highlight">App passwords</span>.</li>
+                                        <li>Select app: <span class="highlight">Mail</span>. Select device: <span class="highlight">Other (Custom name)</span>. Name it (e.g., "FoundssMailNeoPro").</li>
+                                        <li>Click <span class="highlight">Generate</span>. Copy the <span class="highlight">16-character password</span>.</li>
+                                    </ol>
+                                </li>
+                                 <li>Click <span class="highlight">💾 Save Gmail Credentials</span>. These are stored locally in your browser.</li>
+                            </ul>
+                        </li>
+                         <li><strong>Google AI Studio API Key (for AI features):</strong>
+                            <ul>
+                                <li>Obtain an API Key from <a href="https://aistudio.google.com/app/apikey" target="_blank" class="neo-link">Google AI Studio</a>.</li>
+                                <li>Paste it into the "Google AI Studio API Key" field.</li>
+                                <li>Click <span class="highlight">💾 Save AI Studio Key</span>. This is also stored locally.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Theme Selection:</strong>
+                            <ul>
+                                <li>In the <span class="highlight">⚙️ Settings</span> tab, find the "Theme Selection" section.</li>
+                                <li>Choose your preferred theme from the dropdown menu.</li>
+                                <li>Click <span class="highlight">💾 Apply & Save Theme</span>. Your choice will be saved for future sessions.</li>
+                            </ul>
+                        </li>
                     </ol>
-                    <p><strong>Important:</strong> Store this App Password securely. Google only shows it once.</p>
-                    <h3><span class="section-icon">✉️</span>2. Composing and Sending</h3>
+                    <p><strong>Important:</strong> Store your App Passwords securely. Google only shows them once.</p>
+
+                    <h3><span class="section-icon">✏️</span>2. Composing and Sending (Single Account)</h3>
                     <ul>
-                        <li><strong>Sender Information:</strong> Fill required fields in "Compose".</li>
-                        <li><strong>Email Content:</strong> Use the rich text editor.</li>
-                        <li><strong>Attachments:</strong> Add in "Compose".</li>
-                        <li><strong>Recipients:</strong> Add in "Recipients" section.</li>
-                        <li><strong>Send & Monitor:</strong> Initiate send and track progress. Use "Stop Process" if needed (note: this requests a stop; server-side processing of the current batch might complete).</li>
+                        <li><strong>Sender Name & Subject (Compose Tab):</strong> Fill "Your Name" (display name) and "Email Subject". The 'From' email address is taken from your saved Settings.</li>
+                        <li><strong>Email Content:</strong> Use the rich text editor.
+                            <ul><li>Click <span class="highlight">✨ AI Write Assistant</span> to get help from AI for drafting or refining content.</li></ul>
+                        </li>
+                        <li><strong>Attachments & Recipients:</strong> Add as usual.</li>
+                        <li><strong>Send & Monitor:</strong> Initiate send and track progress.</li>
                     </ul>
-                    <h3><span class="section-icon">🛠️</span>3. Other Productivity Tools</h3>
-                    <ul><li><strong>Email Extractor:</strong> Paste text, click "Extract Emails". View count and copy.</li><li><strong>Google Dork Generator:</strong> Fill criteria, click "Generate Dork". Use ethically.</li></ul>
-                    <h3><span class="section-icon">💡</span>4. Tips & Troubleshooting</h3>
+                    
+                    <!-- Section for Reading Emails is Removed -->
+
+                    <h3><span class="section-icon">⚡</span>3. MassGo Campaigner</h3>
+                    <p>This uses separate lists of sender emails/passwords, not the primary ones from Settings.</p>
                     <ul>
-                        <li><strong>Internet Required:</strong> The application needs an internet connection to start. If you see an "Internet Issue" message, check your connection and click retry.</li>
-                        <li><strong>Authentication Failed (Gmail):</strong> Double-check your App Password & ensure 2-Step Verification is enabled for your Gmail account. Also, for some accounts, you might need to enable "Less secure app access" in Google settings if not using an App Password (though App Passwords are strongly recommended).</li>
-                        <li><strong>Gmail Sending Limits:</strong> Standard Gmail accounts have sending limits (around 500 emails/day). For bulk sending, consider dedicated services.</li>
+                        <li><strong>Configuration:</strong> Campaign Sender Name & Subject, .TXT lists for App Passwords and Sender Emails (must correspond line-by-line), MassGo Email Content & Attachments, MassGo Recipients.</li>
+                        <li><strong>Sending & Monitoring:</strong> As before.</li>
+                    </ul>
+
+                    <h3><span class="section-icon">🛠️</span>4. Other Productivity Tools</h3>
+                    <ul><li><strong>Email Extractor & Google Dork Generator:</strong> Function as previously described.</li></ul>
+                    <h3><span class="section-icon">💡</span>5. Tips & Troubleshooting</h3>
+                    <ul>
+                        <li><strong>Local Storage:</strong> Credentials, API Keys, and Theme preferences are stored in your browser's local storage. Clear site data for this page to remove them.</li>
+                        <li><strong>Gmail Sending Limits:</strong> Standard Gmail accounts have sending limits (around 500 emails/day for free accounts, may vary). MassGo helps by cycling, but for very high volumes, consider dedicated services.</li>
+                        <li><strong>AI Model Errors:</strong> If you see "model not found" errors for AI features, it might be an issue with the specific model name chosen (`gemini-1.5-flash-latest`) vs. what your API key region/tier supports. The Google AI Studio or Gemini documentation might list available models for your key.</li>
                     </ul>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- AI Writer Modal -->
+    <div id="aiWriterModal" class="ai-modal-base">
+        <div class="ai-modal-content">
+            <h3><span class="section-icon" style="font-size:1.2em;">✨</span>AI Write Assistant</h3>
+            <div class="input-group">
+                <label for="aiWriterPrompt">Enter your prompt (e.g., "Write a polite follow-up email for a sales lead", "Summarize this text: [paste text]", "Make this email more professional: [paste email]"):</label>
+                <textarea id="aiWriterPrompt" rows="5" placeholder="Describe what you want the AI to write or help with..."></textarea>
+            </div>
+            <div id="aiWriterStatus" class="status-message info" style="display:none; font-size:0.9em; margin-bottom:0;">Working...</div>
+            <div class="ai-modal-actions">
+                <button id="aiGenerateBtn" class="neo-button neo-button-indigo">🤖 Generate</button>
+                <button id="aiInsertBtn" class="neo-button neo-button-success" style="display:none;">📝 Insert into Editor</button>
+                <button id="aiCloseModalBtn" class="neo-button neo-button-danger">❌ Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Email Analysis Modal Removed -->
+
     <div id="neo-toast-container"></div>
 
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
+    try { 
         document.addEventListener('DOMContentLoaded', () => {
-            // Startup Elements
-            const startupOverlay = document.getElementById('startup-overlay');
-            const internetIssueMessage = document.getElementById('internet-issue-message');
-            const welcomeMessage = document.getElementById('welcome-message');
-            const initialLoader = document.getElementById('initial-loader');
-            const retryConnectionBtn = document.getElementById('retry-connection-btn');
-            const proceedToDashboardBtn = document.getElementById('proceed-to-dashboard-btn');
-            const neoDashboardContainer = document.querySelector('.neo-dashboard-container');
+            try { 
+                // Startup Elements
+                const startupOverlay = document.getElementById('startup-overlay');
+                const internetIssueMessage = document.getElementById('internet-issue-message');
+                const welcomeMessage = document.getElementById('welcome-message');
+                const initialLoader = document.getElementById('initial-loader');
+                const retryConnectionBtn = document.getElementById('retry-connection-btn');
+                const proceedToDashboardBtn = document.getElementById('proceed-to-dashboard-btn');
+                const neoDashboardContainer = document.querySelector('.neo-dashboard-container');
 
-            // Core Dashboard Elements
-            const neoNavButtons = document.querySelectorAll('.neo-nav-button');
-            const neoContentPanes = document.querySelectorAll('.neo-content-pane');
-            const currentSectionTitleEl = document.getElementById('current-section-title');
+                // Core Dashboard Elements
+                const neoNavButtons = document.querySelectorAll('.neo-nav-button');
+                const neoContentPanes = document.querySelectorAll('.neo-content-pane');
+                const currentSectionTitleEl = document.getElementById('current-section-title');
 
-            // Compose Pane Elements
-            const senderNameInput = document.getElementById('senderName');
-            const senderEmailInput = document.getElementById('senderEmail');
-            const senderPasswordInput = document.getElementById('senderPassword');
-            const emailSubjectInput = document.getElementById('emailSubject');
-            const attachmentsInput = document.getElementById('attachments');
-            const dropZone = document.getElementById('dropZone');
-            const attachmentsListDiv = document.getElementById('attachmentsList');
-
-            // Recipients Pane Elements
-            const recipientsTabButtons = document.querySelectorAll('.recipients-tabs .tab-btn'); 
-            const recipientsTabContents = document.querySelectorAll('.tab-content-inner'); 
-            const recipientsManualTextarea = document.getElementById('recipientsManual');
-            const addManualEmailsBtn = document.getElementById('addManualEmailsBtn');
-            const loadTxtBtn = document.getElementById('loadTxtBtn');
-            const loadCsvBtn = document.getElementById('loadCsvBtn');
-            const recipientsListDiv = document.getElementById('recipientsList');
-            const recipientsCountSpan = document.getElementById('recipientsCount');
-            const clearRecipientsBtn = document.getElementById('clearRecipientsBtn');
-            const emailCountBadge = document.getElementById('emailCount');
-            
-            // Send & Monitor Pane Elements
-            const sendEmailsBtn = document.getElementById('sendEmailsBtn');
-            const stopSendingBtn = document.getElementById('stopSendingBtn');
-            const statusMessageDiv = document.getElementById('statusMessage');
-            const progressBar = document.getElementById('progressBar');
-            const resultsLogPre = document.getElementById('resultsLog');
-            const summaryMessageDiv = document.getElementById('summaryMessage');
-
-            // Email Extractor Elements
-            const textToExtractEmails = document.getElementById('textToExtractEmails');
-            const extractEmailsBtn = document.getElementById('extractEmailsBtn');
-            const extractedEmailsOutput = document.getElementById('extractedEmailsOutput');
-            const copyExtractedEmailsBtn = document.getElementById('copyExtractedEmailsBtn');
-            const extractedEmailsCountBadge = document.getElementById('extractedEmailsCountBadge');
+                // Compose Pane Elements
+                const senderNameInput = document.getElementById('senderName');
+                const emailSubjectInput = document.getElementById('emailSubject');
+                const attachmentsInput = document.getElementById('attachments');
+                const dropZone = document.getElementById('dropZone');
+                const attachmentsListDiv = document.getElementById('attachmentsList');
+                const aiWriteAssistantBtn = document.getElementById('aiWriteAssistantBtn');
 
 
-            // Dork Generator Elements
-            const dorkKeywordsInput = document.getElementById('dorkKeywords');
-            const dorkSiteInput = document.getElementById('dorkSite');
-            const dorkFiletypeSelect = document.getElementById('dorkFiletype');
-            const dorkIntextInput = document.getElementById('dorkIntext');
-            const dorkIntitleInput = document.getElementById('dorkIntitle');
-            const dorkEmailProviderInput = document.getElementById('dorkEmailProvider');
-            const generateDorkBtn = document.getElementById('generateDorkBtn');
-            const generatedDorkOutput = document.getElementById('generatedDorkOutput');
-            const copyDorkBtn = document.getElementById('copyDorkBtn');
-            
-            // State Variables
-            let selectedFiles = []; 
-            let recipients = [];    
-            let sendingActive = false; // Tracks if the frontend initiated sending process is active
-            let stopRequested = false; // Flag to indicate if user requested stop
+                // Recipients Pane Elements
+                const recipientsTabButtons = document.querySelectorAll('#recipients .recipients-tabs .tab-btn'); 
+                const recipientsTabContents = document.querySelectorAll('#recipients .tab-content-inner'); 
+                const recipientsManualTextarea = document.getElementById('recipientsManual');
+                const addManualEmailsBtn = document.getElementById('addManualEmailsBtn');
+                const loadTxtBtn = document.getElementById('loadTxtBtn');
+                const loadCsvBtn = document.getElementById('loadCsvBtn');
+                const recipientsListDiv = document.getElementById('recipientsList');
+                const recipientsCountSpan = document.getElementById('recipientsCount');
+                const clearRecipientsBtn = document.getElementById('clearRecipientsBtn');
+                const emailCountBadge = document.getElementById('emailCount');
+                
+                // Send & Monitor Pane Elements
+                const sendEmailsBtn = document.getElementById('sendEmailsBtn');
+                const stopSendingBtn = document.getElementById('stopSendingBtn');
+                const statusMessageDiv = document.getElementById('statusMessage');
+                const progressBar = document.getElementById('progressBar');
+                const resultsLogPre = document.getElementById('resultsLog');
+                const summaryMessageDiv = document.getElementById('summaryMessage');
 
-            const quill = new Quill('#editor', {
-                theme: 'snow',
-                placeholder: 'Craft your compelling message here!',
-                modules: {
-                    toolbar: [
-                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }], [{ 'font': [] }],
-                        [{ 'size': ['small', false, 'large', 'huge'] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'color': [] }, { 'background': [] }],
-                        [{ 'script': 'sub'}, { 'script': 'super' }],
-                        ['blockquote', 'code-block'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
-                        [{ 'direction': 'rtl' }, { 'align': [] }],
-                        ['link', 'image', 'video'], ['clean']
-                    ]
-                }
-            });
-            
-            async function checkInternetConnection() {
-                if (!navigator.onLine) return false;
-                try {
-                    // Use a more reliable and CORS-friendly endpoint for checking.
-                    // Using a timestamp to bypass browser cache for this check.
-                    await fetch('https://1.1.1.1/cdn-cgi/trace?_=' + new Date().getTime(), { method: 'GET', mode: 'no-cors', cache: 'no-store' });
-                    // no-cors means we can't read the response, but if it doesn't throw, connection is likely okay.
-                    return true; 
-                } catch (error) {
-                    console.warn("Internet check fetch failed:", error);
-                     try { // Fallback check
-                        await fetch('https://dns.google/resolve?name=example.com&type=A&_=' + new Date().getTime(), {mode: 'no-cors', cache: 'no-store'});
-                        return true;
-                    } catch (fallbackError) {
-                        console.warn("Fallback Internet check failed:", fallbackError);
-                        return false;
+                // MassGo Pane Elements
+                const massGoCampaignSenderNameInput = document.getElementById('massGoCampaignSenderName');
+                const massGoEmailSubjectInput = document.getElementById('massGoEmailSubject');
+                const massGoAppPasswordsFileBtn = document.getElementById('massGoAppPasswordsFileBtn');
+                const massGoAppPasswordsCountDiv = document.getElementById('massGoAppPasswordsCount');
+                const massGoSenderEmailsFileBtn = document.getElementById('massGoSenderEmailsFileBtn');
+                const massGoSenderEmailsCountDiv = document.getElementById('massGoSenderEmailsCount');
+                const massGoAttachmentsInput = document.getElementById('massGoAttachmentsInput');
+                const massGoDropZone = document.getElementById('massGoDropZone');
+                const massGoAttachmentsListDiv = document.getElementById('massGoAttachmentsList');
+                const massGoTransferRecipientsBtn = document.getElementById('massGoTransferRecipientsBtn');
+                const massGoRecipientsTabButtons = document.querySelectorAll('#massGoRecipientsTabs .tab-btn');
+                const massGoRecipientsTabContents = document.querySelectorAll('#massGo .recipients-section .tab-content-inner'); 
+                const massGoRecipientsManualTextarea = document.getElementById('massGoRecipientsManual');
+                const addMassGoManualEmailsBtn = document.getElementById('addMassGoManualEmailsBtn');
+                const loadMassGoTxtBtn = document.getElementById('loadMassGoTxtBtn');
+                const loadMassGoCsvBtn = document.getElementById('loadMassGoCsvBtn');
+                const massGoRecipientsListDiv = document.getElementById('massGoRecipientsList');
+                const massGoRecipientsCountSpan = document.getElementById('massGoRecipientsCount');
+                const clearMassGoRecipientsBtn = document.getElementById('clearMassGoRecipientsBtn');
+                const massGoEmailCountBadge = document.getElementById('massGoEmailCount');
+                const initiateMassGoSendBtn = document.getElementById('initiateMassGoSendBtn');
+                const stopMassGoBtn = document.getElementById('stopMassGoBtn');
+                const massGoStatusMessageDiv = document.getElementById('massGoStatusMessage');
+                const massGoProgressBar = document.getElementById('massGoProgressBar');
+                const massGoResultsLogPre = document.getElementById('massGoResultsLog');
+                const massGoSummaryMessageDiv = document.getElementById('massGoSummaryMessage');
+                let massGoAppPasswordsFileInput = document.createElement('input'); 
+                massGoAppPasswordsFileInput.type = 'file'; massGoAppPasswordsFileInput.accept = '.txt';
+                let massGoSenderEmailsFileInput = document.createElement('input'); 
+                massGoSenderEmailsFileInput.type = 'file'; massGoSenderEmailsFileInput.accept = '.txt';
+
+
+                // Email Extractor Elements
+                const textToExtractEmails = document.getElementById('textToExtractEmails');
+                const extractEmailsBtn = document.getElementById('extractEmailsBtn');
+                const extractedEmailsOutput = document.getElementById('extractedEmailsOutput');
+                const copyExtractedEmailsBtn = document.getElementById('copyExtractedEmailsBtn');
+                const extractedEmailsCountBadge = document.getElementById('extractedEmailsCountBadge');
+
+                // Dork Generator Elements
+                const dorkKeywordsInput = document.getElementById('dorkKeywords');
+                const dorkSiteInput = document.getElementById('dorkSite');
+                const dorkFiletypeSelect = document.getElementById('dorkFiletype');
+                const dorkIntextInput = document.getElementById('dorkIntext');
+                const dorkIntitleInput = document.getElementById('dorkIntitle');
+                const dorkEmailProviderInput = document.getElementById('dorkEmailProvider');
+                const generateDorkBtn = document.getElementById('generateDorkBtn');
+                const generatedDorkOutput = document.getElementById('generatedDorkOutput');
+                const copyDorkBtn = document.getElementById('copyDorkBtn');
+
+                // Settings Pane Elements
+                const settingsSenderEmailInput = document.getElementById('settingsSenderEmail');
+                const settingsSenderPasswordInput = document.getElementById('settingsSenderPassword');
+                const saveGmailCredentialsBtn = document.getElementById('saveGmailCredentialsBtn');
+                const googleAiStudioApiKeyInput = document.getElementById('googleAiStudioApiKey');
+                const saveGoogleAiStudioApiKeyBtn = document.getElementById('saveGoogleAiStudioApiKeyBtn');
+                const themeSelectorDropdown = document.getElementById('themeSelectorDropdown');
+                const saveThemeBtn = document.getElementById('saveThemeBtn');
+
+
+                // AI Writer Modal Elements
+                const aiWriterModal = document.getElementById('aiWriterModal');
+                const aiWriterPrompt = document.getElementById('aiWriterPrompt');
+                const aiWriterStatus = document.getElementById('aiWriterStatus');
+                const aiGenerateBtn = document.getElementById('aiGenerateBtn');
+                const aiInsertBtn = document.getElementById('aiInsertBtn');
+                const aiCloseModalBtn = document.getElementById('aiCloseModalBtn');
+                let aiGeneratedTextContent = "";
+                
+                // State Variables
+                let selectedFiles = []; 
+                let recipients = [];    
+                let sendingActive = false; 
+                let stopRequested = false; 
+
+                // MassGo State Variables
+                let massGoAppPasswords = [];
+                let massGoSenderEmails = [];
+                let massGoSelectedFiles = [];
+                let massGoRecipients = [];
+                let massGoSendingActive = false;
+                let massGoStopRequested = false;
+
+                // Define Quill toolbar options first
+                const mainQuillToolbarOptions = [
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }], [{ 'font': [] }],
+                    [{ 'size': ['small', false, 'large', 'huge'] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    ['blockquote', 'code-block'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'direction': 'rtl' }, { 'align': [] }],
+                    ['link', 'image', 'video'], ['clean']
+                ];
+
+                const quill = new Quill('#editor', {
+                    theme: 'snow',
+                    placeholder: 'Craft your compelling message here!',
+                    modules: {
+                        toolbar: mainQuillToolbarOptions
                     }
-                }
-            }
-
-            async function initializeAppStartup() {
-                initialLoader.style.display = 'block';
-                internetIssueMessage.style.display = 'none';
-                welcomeMessage.style.display = 'none';
-                const isOnline = await checkInternetConnection();
-                initialLoader.style.display = 'none';
-                if (isOnline) {
-                    welcomeMessage.style.display = 'block';
-                } else {
-                    internetIssueMessage.style.display = 'block';
-                }
-                startupOverlay.style.display = 'flex';
-            }
-
-            retryConnectionBtn.addEventListener('click', initializeAppStartup);
-            
-            proceedToDashboardBtn.addEventListener('click', () => {
-                startupOverlay.style.display = 'none';
-                neoDashboardContainer.classList.add('visible');
-                document.body.style.overflow = 'auto'; 
-                initializeDashboardComponents(); 
-            });
-            
-            function initializeDashboardComponents() {
-                renderAttachmentsList();
-                renderRecipientsList();
-                updateStatus('Dashboard ready. Select an action.', 'info');
-                if (extractedEmailsCountBadge) extractedEmailsCountBadge.style.display = 'none';
-            }
-
-            neoNavButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetSection = button.dataset.section;
-                    const sectionTitleText = button.dataset.title || button.textContent.replace(button.querySelector('.neo-nav-icon').textContent, '').trim();
-                    const sectionIcon = button.dataset.icon || button.querySelector('.neo-nav-icon').textContent;
-
-                    neoNavButtons.forEach(btn => {
-                        btn.classList.remove('active');
-                        ['compose-active', 'recipients-active', 'send-active', 'emailExtractor-active', 'dorkGenerator-active', 'howToUse-active'].forEach(cls => btn.classList.remove(cls));
-                    });
-                    button.classList.add('active', `${targetSection}-active`);
-
-                    neoContentPanes.forEach(pane => {
-                        pane.classList.toggle('active', pane.id === targetSection);
-                    });
-                    
-                    currentSectionTitleEl.innerHTML = `<span class="title-icon">${sectionIcon}</span>${sectionTitleText}`;
                 });
-            });
 
-            function showFeedback(message, type = 'info', duration = 3500) {
-                const container = document.getElementById('neo-toast-container');
-                if (!container) { 
-                    if (type === 'error' || type === 'warning') alert(`${type.toUpperCase()}: ${message}`);
-                    else console.log(`Feedback (${type}): ${message}`);
-                    return;
-                }
-                const toast = document.createElement('div');
-                toast.className = `neo-toast ${type}`;
-                toast.textContent = message;
-                container.appendChild(toast);
-                requestAnimationFrame(() => { 
-                    requestAnimationFrame(() => { toast.classList.add('show'); });
-                });
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    toast.addEventListener('transitionend', () => {
-                        if (toast.parentNode === container) { container.removeChild(toast); }
-                    }, { once: true });
-                }, duration);
-            }
-
-            function updateStatus(message, type = 'info') {
-                if(statusMessageDiv) {
-                    statusMessageDiv.textContent = message.toUpperCase();
-                    statusMessageDiv.className = 'status-message'; statusMessageDiv.classList.add(type);
-                }
-            }
-            function logResult(message, type = 'info') { 
-                if(resultsLogPre) {
-                    const span = document.createElement('span');
-                    // Sanitize message slightly for display in <pre>
-                    span.textContent = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                    span.classList.add(type);
-                    resultsLogPre.appendChild(span); resultsLogPre.appendChild(document.createTextNode('\n'));
-                    resultsLogPre.scrollTop = resultsLogPre.scrollHeight;
-                }
-            }
-            function updateProgressBar(progress) {
-                 if(progressBar) {
-                    const roundedProgress = Math.round(progress);
-                    progressBar.style.width = `${roundedProgress}%`; progressBar.textContent = `${roundedProgress}%`;
-                }
-            }
-            function updateSummary(successful, failed, total) {
-                if(summaryMessageDiv) {
-                    summaryMessageDiv.textContent = `📊 Summary: ${successful} successful, ${failed} failed out of ${total} total emails.`;
-                }
-            }
-            function formatFileSize(bytes) {
-                if (bytes === 0) return '0 B'; const k = 1024; const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-            }
-            function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim()); }
-            
-            function renderAttachmentsList() {
-                if (!attachmentsListDiv) return;
-                attachmentsListDiv.innerHTML = ''; 
-                if (selectedFiles.length === 0) {
-                    attachmentsListDiv.innerHTML = '<p class="no-items-message">No files attached yet.</p>'; return;
-                }
-                selectedFiles.forEach((file, index) => {
-                    const itemDiv = document.createElement('div'); itemDiv.classList.add('attachment-item');
-                    const fileExtension = file.name.split('.').pop().toUpperCase().substring(0, 4) || 'FILE';
-                    itemDiv.innerHTML = `
-                        <div class="attachment-info" style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
-                            <div class="file-icon">${fileExtension}</div>
-                            <div class="file-details" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                <span class="file-name" title="${file.name}">${file.name}</span>
-                                <span class="file-size" style="font-size:0.85em; color: var(--neo-text-secondary);">${formatFileSize(file.size)}</span>
-                            </div>
-                        </div>
-                        <button class="remove-attachment neo-button neo-button-danger" data-index="${index}" title="Remove ${file.name}" style="padding: 3px 8px; font-size: 0.9em;">X</button>`;
-                    attachmentsListDiv.appendChild(itemDiv);
-                });
-                attachmentsListDiv.querySelectorAll('.remove-attachment').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const indexToRemove = parseInt(event.target.dataset.index);
-                        selectedFiles.splice(indexToRemove, 1); renderAttachmentsList();
-                    });
-                });
-            }
-            function renderRecipientsList() {
-                if (!recipientsListDiv || !recipientsCountSpan || !emailCountBadge) return;
-                recipientsListDiv.innerHTML = '';
-                if (recipients.length === 0) {
-                    recipientsListDiv.innerHTML = '<p class="no-items-message">No recipients added yet.</p>';
-                } else {
-                    recipients.forEach((email, index) => {
-                        const itemDiv = document.createElement('div'); itemDiv.classList.add('recipients-list-item');
-                        itemDiv.innerHTML = `
-                            <span title="${email}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-grow:1;">${email}</span>
-                            <button data-index="${index}" class="remove-recipient-btn neo-button neo-button-danger" title="Remove ${email}" style="padding: 3px 8px; font-size: 0.9em; margin-left:10px;">X</button>`;
-                        recipientsListDiv.appendChild(itemDiv);
-                    });
-                }
-                recipientsCountSpan.textContent = recipients.length;
-                emailCountBadge.style.display = recipients.length > 0 ? 'inline-block' : 'none';
-                recipientsListDiv.querySelectorAll('.remove-recipient-btn').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const indexToRemove = parseInt(event.target.dataset.index);
-                        recipients.splice(indexToRemove, 1); renderRecipientsList();
-                    });
-                });
-            }
-
-            if (dropZone) dropZone.addEventListener('click', () => attachmentsInput.click());
-            if (dropZone) dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-            if (dropZone) dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
-            if (dropZone) dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
-            if (attachmentsInput) attachmentsInput.addEventListener('change', (event) => { handleFiles(event.target.files); event.target.value = null; });
-            
-            function handleFiles(files) { 
-                let newFilesAdded = 0;
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) { selectedFiles.push(file); newFilesAdded++; }
-                }
-                if(newFilesAdded > 0) showFeedback(`${newFilesAdded} file(s) added.`, 'success');
-                else if (files.length > 0) showFeedback('Selected file(s) already in list or no new files chosen.', 'info');
-                renderAttachmentsList();
-            }
-
-            recipientsTabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetContent = button.dataset.tabContent;
-                    recipientsTabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active');
-                    recipientsTabContents.forEach(content => content.classList.toggle('active', content.id === targetContent));
-                });
-            });
-            if (addManualEmailsBtn) addManualEmailsBtn.addEventListener('click', () => { 
-                if (!recipientsManualTextarea) return;
-                const emailsText = recipientsManualTextarea.value.trim();
-                if (emailsText) {
-                    const rawEmails = emailsText.split(/[\n,; ]+/); let addedCount = 0; let invalidCount = 0; let duplicateCount = 0;
-                    rawEmails.forEach(rawEmail => {
-                        const email = rawEmail.trim(); if (!email) return;
-                        if (isValidEmail(email)) { if (!recipients.includes(email)) { recipients.push(email); addedCount++; } else { duplicateCount++; } } else { invalidCount++; }
-                    });
-                    let feedbackMsg = "";
-                    if (addedCount > 0) feedbackMsg += `Added ${addedCount} new email(s). `;
-                    if (duplicateCount > 0) feedbackMsg += `${duplicateCount} duplicate(s) ignored. `;
-                    if (invalidCount > 0) feedbackMsg += `${invalidCount} invalid entry/ies ignored.`;
-                    if (feedbackMsg) showFeedback(feedbackMsg.trim(), addedCount > 0 ? 'success' : 'info' );
-                    else showFeedback('No valid new email addresses to add.', 'info');
-                    if (addedCount > 0) recipientsManualTextarea.value = ''; 
-                    renderRecipientsList();
-                } else { showFeedback('Please enter email addresses.', 'warning'); }
-            });
-             async function parseFileForEmails(file, fileType) {
-                try {
-                    const fileContent = await file.text(); let parsedEmails = [];
-                    // Simple split for TXT and CSV; JSON attempt is more complex for robust parsing
-                    if (fileType === 'txt_or_csv') { 
-                        parsedEmails = fileContent.split(/[\n,; ]+/).map(e => e.trim());
-                    } else {
-                         // Fallback or specific logic for other types if needed
-                        parsedEmails = fileContent.split(/[\n,; ]+/).map(e => e.trim());
+                const massGoQuill = new Quill('#massGoEditor', {
+                    theme: 'snow',
+                    placeholder: 'Craft your MassGo campaign message here!',
+                    modules: {
+                        toolbar: mainQuillToolbarOptions 
                     }
-                    let addedCount = 0; let invalidCount = 0; let duplicateCount = 0;
-                    parsedEmails.forEach(email => { if(!email) return; if (isValidEmail(email)) { if (!recipients.includes(email)) { recipients.push(email); addedCount++; } else { duplicateCount++; } } else { invalidCount++; } });
-                    let feedbackMsg = "";
-                    if (addedCount > 0) feedbackMsg += `Added ${addedCount} new email(s) from ${file.name}. `;
-                    if (duplicateCount > 0) feedbackMsg += `${duplicateCount} duplicate(s) ignored. `;
-                    if (invalidCount > 0) feedbackMsg += `${invalidCount} invalid entry/ies ignored.`;
-                    if(feedbackMsg) showFeedback(feedbackMsg.trim(), addedCount > 0 ? 'success' : 'info'); else showFeedback(`No new valid email addresses found in ${file.name}.`, 'info');
-                    renderRecipientsList();
-                } catch (error) { showFeedback(`Error reading ${file.name}: ${error.message}`, 'error'); console.error(`Error reading ${file.name}:`, error); }
-            }
-            if (loadTxtBtn) loadTxtBtn.addEventListener('click', () => { 
-                const input = document.createElement('input'); input.type = 'file'; input.accept = '.txt,text/plain';
-                input.onchange = async (event) => { const file = event.target.files[0]; if (file) parseFileForEmails(file, 'txt_or_csv'); event.target.value = null; };
-                input.click();
-            });
-            if (loadCsvBtn) loadCsvBtn.addEventListener('click', () => {
-                const input = document.createElement('input'); input.type = 'file'; input.accept = '.csv,text/csv';
-                input.onchange = async (event) => { const file = event.target.files[0]; if (file) parseFileForEmails(file, 'txt_or_csv'); event.target.value = null; };
-                input.click();
-            });
-            if (clearRecipientsBtn) clearRecipientsBtn.addEventListener('click', () => {
-                if (recipients.length === 0) { showFeedback('Recipient list is already empty.', 'info'); return; }
-                if (confirm('Are you sure you want to clear all recipients? This action cannot be undone.')) { recipients = []; renderRecipientsList(); showFeedback('All recipients cleared.', 'success'); }
-            });
-
-            if (sendEmailsBtn) sendEmailsBtn.addEventListener('click', async () => {
-                if (sendingActive) { showFeedback('A sending process is already active.', 'warning'); return; }
+                });
                 
-                stopRequested = false; // Reset stop flag for new process
-                const senderNameVal = senderNameInput.value.trim(); const senderEmailVal = senderEmailInput.value.trim();
-                const senderPasswordVal = senderPasswordInput.value.trim(); const emailSubjectVal = emailSubjectInput.value.trim();
-                const emailBodyHTML = quill.root.innerHTML;
-
-                if (!senderNameVal) { showFeedback('Sender Name is required.', 'error'); senderNameInput.focus(); return; }
-                if (!isValidEmail(senderEmailVal)) { showFeedback('Valid Sender Email is required.', 'error'); senderEmailInput.focus(); return; }
-                if (!senderPasswordVal) { showFeedback('Sender App Password is required.', 'error'); senderPasswordInput.focus(); return; }
-                // Basic check for 16 char app password, but Gmail might have other formats.
-                // if (senderPasswordVal.length !== 16 || senderPasswordVal.includes(' ')) { showFeedback('App Password should generally be 16 characters without spaces. Please verify from Google Account settings.', 'warning'); senderPasswordInput.focus(); return; }
-                if (!emailSubjectVal) { showFeedback('Email Subject is required.', 'error'); emailSubjectInput.focus(); return; }
-                if (!emailBodyHTML || emailBodyHTML === "<p><br></p>" || quill.getText().trim().length === 0) { showFeedback('Email Content cannot be empty.', 'error'); quill.focus(); return; }
-                if (recipients.length === 0) { showFeedback('Please add at least one recipient.', 'error'); document.querySelector('.neo-nav-button[data-section="recipients"]').click(); return; }
-                
-                if (!confirm(`You are about to send an email with subject "${emailSubjectVal}" to ${recipients.length} recipient(s).\n\nProceed?`)) return;
-
-                sendingActive = true; sendEmailsBtn.disabled = true; stopSendingBtn.disabled = false;
-                resultsLogPre.textContent = ''; updateProgressBar(0); updateSummary(0, 0, recipients.length);
-                updateStatus("Initiating send sequence...", 'info'); logResult("🚀 Starting email sending process...", 'info');
-                
-                const formData = new FormData(); formData.append('sender_name', senderNameVal); formData.append('sender_email', senderEmailVal);
-                formData.append('sender_password', senderPasswordVal); formData.append('email_subject', emailSubjectVal);
-                formData.append('recipients', recipients.join(','));  formData.append('email_body_html', emailBodyHTML);
-                
-                // Read files and append them. This needs to be async if files are large.
-                // For simplicity, reading them here.
-                for (const file of selectedFiles) {
-                    // No need to re-read and encode here if `app.py` expects file objects directly from FormData
-                    // If `app.py` expects base64, then the encoding should happen here.
-                    // The current `app.py` expects `request.files` which are file-like objects.
-                    formData.append('attachments', file, file.name);
-                }
-                
-                // The backend will handle emails one by one.
-                // The progress bar here will just jump to 100% when the backend responds.
-                // For per-email progress, you'd need a different communication mechanism (e.g., WebSockets or Server-Sent Events)
-                // or iterative API calls, which makes stopping more complex.
-
-                try {
-                    const response = await fetch('http://127.0.0.1:5000/send_emails', { method: 'POST', body: formData });
-                    
-                    if (stopRequested) { // Check if stop was pressed during fetch/backend processing
-                        logResult("ℹ️ Sending was interrupted by user request. Server processing might have partially completed.", "warning");
-                        // Status already updated by stopSendingBtn, response handling might be moot or partial
-                        updateStatus("STOP REQUESTED. Check logs for status of emails.", 'warning');
-                    } else {
-                         const data = await response.json();
-                        if (response.ok) {
-                           updateStatus(`Process completed. Successful: ${data.successful}, Failed: ${data.failed}.`, 'success');
-                           data.results.forEach(result => logResult(result, result.startsWith("✅") ? 'success' : 'error'));
-                           updateSummary(data.successful, data.failed, data.total);
-                        } else {
-                            updateStatus(`SERVER ERROR: ${data.message || 'An unknown error occurred.'}`, 'error');
-                            if (data.results && Array.isArray(data.results)) data.results.forEach(result => logResult(result, 'error'));
-                            else if (data.message) logResult(`❌ Server error: ${data.message}`, 'error');
-                            updateSummary(0, data.total || recipients.length, data.total || recipients.length);
+                async function checkInternetConnection() {
+                    if (!navigator.onLine) return false;
+                    try {
+                        await fetch('https://1.1.1.1/cdn-cgi/trace?_=' + new Date().getTime(), { method: 'GET', mode: 'no-cors', cache: 'no-store' });
+                        return true; 
+                    } catch (error) {
+                        console.warn("Primary internet check failed:", error);
+                        try {
+                            await fetch('https://dns.google/resolve?name=example.com&type=A&_=' + new Date().getTime(), {mode: 'no-cors', cache: 'no-store'});
+                            return true;
+                        } catch (fallbackError) { 
+                            console.warn("Fallback internet check failed:", fallbackError);
+                            return false; 
                         }
                     }
-                } catch (error) {
-                    console.error('Fetch error:', error);
-                    if (!stopRequested) {
-                        updateStatus(`NETWORK ERROR OR SERVER UNREACHABLE. Ensure backend is running.`, 'error');
+                }
+
+                async function initializeAppStartup() {
+                    try { 
+                        initialLoader.style.display = 'block';
+                        internetIssueMessage.style.display = 'none';
+                        welcomeMessage.style.display = 'none';
+                        loadAndApplySavedTheme(); // Load theme early
+                        const isOnline = await checkInternetConnection();
+                        initialLoader.style.display = 'none';
+                        if (isOnline) { welcomeMessage.style.display = 'block'; } 
+                        else { internetIssueMessage.style.display = 'block'; }
+                        startupOverlay.style.display = 'flex';
+                    } catch (err) {
+                        console.error("Error during initializeAppStartup:", err);
+                        initialLoader.innerHTML = `<p style="color:red;">Critical startup error. Check console.</p>`;
                     }
-                    logResult(`❌ NETWORK ERROR: ${error.message}. Could not connect to backend.`, 'error');
-                    updateSummary(0, recipients.length, recipients.length);
-                } finally {
-                    if (!stopRequested) updateProgressBar(100); // Only set to 100 if not stopped.
-                    sendingActive = false; 
-                    sendEmailsBtn.disabled = false; 
-                    stopSendingBtn.disabled = true;
-                    stopRequested = false; // Reset for next time
-                    logResult("🏁 Email sending process (frontend perspective) finished.", 'info');
                 }
-            });
 
-            if (stopSendingBtn) stopSendingBtn.addEventListener('click', () => { 
-                if (!sendingActive) {
-                    showFeedback("No active sending process to stop.", "info");
-                    return;
-                }
-                stopRequested = true; // Set the flag
-                // Note: This client-side stop doesn't inherently stop the Flask server mid-request for the current /send_emails call.
-                // Flask will likely complete processing all emails in the current batch.
-                // True cancellable tasks on the backend are more complex.
-
-                sendingActive = false; 
-                sendEmailsBtn.disabled = false;
-                stopSendingBtn.disabled = true;
-                updateStatus("STOP REQUESTED. The backend might still be processing the current batch.", 'warning');
-                logResult("⚠️ User requested to stop. Any emails already submitted to the server for the current batch might still be sent.", 'warning');
-                showFeedback("Stop request acknowledged. The server might complete sending the current batch of emails.", "info");
-                updateProgressBar(0); // Visually indicate stop
-            });
-
-            if (extractEmailsBtn) extractEmailsBtn.addEventListener('click', () => {
-                const text = textToExtractEmails.value;
-                copyExtractedEmailsBtn.style.display = 'none';
-                if (extractedEmailsCountBadge) extractedEmailsCountBadge.style.display = 'none';
-
-                if (!text.trim()) { 
-                    extractedEmailsOutput.textContent = 'Please paste some text first.'; 
-                    extractedEmailsOutput.style.color = 'var(--neo-text-tertiary)'; 
-                    return; 
-                }
-                const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-                const foundEmails = text.match(emailRegex);
-                if (foundEmails && foundEmails.length > 0) {
-                    const uniqueEmails = [...new Set(foundEmails.map(email => email.toLowerCase()))]; // Make unique and lowercase
-                    extractedEmailsOutput.textContent = uniqueEmails.join('\n'); 
-                    extractedEmailsOutput.style.color = 'var(--neo-text-primary)';
-                    copyExtractedEmailsBtn.style.display = 'inline-flex';
-                    if (extractedEmailsCountBadge) {
-                        extractedEmailsCountBadge.textContent = uniqueEmails.length;
-                        extractedEmailsCountBadge.style.display = 'inline-block';
-                    }
-                    showFeedback(`Extracted ${uniqueEmails.length} unique email(s).`, 'success');
-                } else { 
-                    extractedEmailsOutput.textContent = 'No email addresses found in the provided text.'; 
-                    extractedEmailsOutput.style.color = 'var(--neo-text-secondary)'; 
-                    if (extractedEmailsCountBadge) extractedEmailsCountBadge.style.display = 'none';
-                    showFeedback('No emails found.', 'info'); 
-                }
-            });
-            if (generateDorkBtn) generateDorkBtn.addEventListener('click', () => {
-                let dorkParts = [];
-                const keywords = dorkKeywordsInput.value.trim(); const site = dorkSiteInput.value.trim();
-                const filetype = dorkFiletypeSelect.value; const intext = dorkIntextInput.value.trim();
-                const intitle = dorkIntitleInput.value.trim(); const emailProvider = dorkEmailProviderInput.value.trim();
+                if (retryConnectionBtn) retryConnectionBtn.addEventListener('click', initializeAppStartup);
                 
-                copyDorkBtn.style.display = 'none';
-
-                if (keywords) dorkParts.push(`"${keywords}"`); if (site) dorkParts.push(`site:${site}`);
-                if (filetype) dorkParts.push(`filetype:${filetype}`); if (intext) dorkParts.push(`intext:"${intext}"`);
-                if (intitle) dorkParts.push(`intitle:"${intitle}"`);
-                
-                let emailPatterns = [];
-                if (emailProvider) {
-                    // Support multiple providers comma-separated
-                    const providers = emailProvider.split(',').map(p => p.trim()).filter(p => p);
-                    if (providers.length > 0) {
-                        emailPatterns.push("(" + providers.map(p => `intext:"@${p}"`).join(" OR ") + ")");
-                    }
-                } else if (keywords || site || intext || intitle) { 
-                    // Add common email indicators if no specific provider is given but other criteria are
-                    emailPatterns.push(`(intext:"@gmail.com" OR intext:"@yahoo.com" OR intext:"@outlook.com" OR intext:"@aol.com" OR intext:"contact" OR intext:"email")`);
-                }
-
-                if (emailPatterns.length > 0) dorkParts.push(emailPatterns.join(" "));
-                
-                const finalDork = dorkParts.join(" ").trim();
-                if (finalDork) { 
-                    generatedDorkOutput.textContent = finalDork; 
-                    generatedDorkOutput.style.color = 'var(--neo-text-primary)'; 
-                    copyDorkBtn.style.display = 'inline-flex';
-                }
-                else { 
-                    generatedDorkOutput.textContent = 'Please provide some criteria to generate a dork.'; 
-                    generatedDorkOutput.style.color = 'var(--neo-text-secondary)'; 
-                }
-            });
-
-            function copyToClipboardHandler(textProviderFunc, buttonElement, successMessage) {
-                const textToCopy = textProviderFunc();
-                if (!textToCopy || textToCopy.trim() === "" || textToCopy.startsWith("No ") || textToCopy.startsWith("Dork will") || textToCopy.startsWith("Please paste")) {
-                    showFeedback('Nothing to copy yet.', 'info'); return;
-                }
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    const originalText = buttonElement.innerHTML; const originalClass = buttonElement.className;
-                    buttonElement.innerHTML = '✅ Copied!'; buttonElement.classList.add('copied'); buttonElement.disabled = true;
-                    setTimeout(() => {
-                        buttonElement.innerHTML = originalText; buttonElement.className = originalClass; buttonElement.disabled = false;
-                    }, 2000);
-                    showFeedback(successMessage || 'Content copied to clipboard!', 'success');
-                }).catch(err => {
-                    console.error('Failed to copy: ', err);
-                    showFeedback('Failed to copy text. Your browser might not support this feature or permissions are denied.', 'error');
+                if (proceedToDashboardBtn) proceedToDashboardBtn.addEventListener('click', () => {
+                    startupOverlay.style.display = 'none';
+                    neoDashboardContainer.classList.add('visible');
+                    document.body.style.overflow = 'auto'; 
+                    loadStoredSettings(); 
+                    initializeDashboardComponents(); 
                 });
+                
+                function initializeDashboardComponents() {
+                    renderAttachmentsList();
+                    renderRecipientsList();
+                    renderMassGoAttachmentsList(); 
+                    renderMassGoRecipientsList();  
+                    updateStatus('READY TO SEND.', 'info'); 
+                    updateMassGoStatus('MASSGO READY.', 'info'); 
+                    if (extractedEmailsCountBadge) extractedEmailsCountBadge.style.display = 'none';
+                    if (massGoAppPasswordsCountDiv) massGoAppPasswordsCountDiv.style.display = 'none';
+                    if (massGoSenderEmailsCountDiv) massGoSenderEmailsCountDiv.style.display = 'none';
+                }
+
+                neoNavButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetSection = button.dataset.section;
+                        const sectionTitleText = button.dataset.title || button.textContent.replace(button.querySelector('.neo-nav-icon').textContent, '').trim();
+                        const sectionIcon = button.dataset.icon || button.querySelector('.neo-nav-icon').textContent;
+
+                        neoNavButtons.forEach(btn => {
+                            btn.classList.remove('active');
+                            ['compose-active', 'recipients-active', 'send-active', 'massGo-active', 'emailExtractor-active', 'dorkGenerator-active', 'settings-active', 'howToUse-active'].forEach(cls => btn.classList.remove(cls));
+                        });
+                        button.classList.add('active', `${targetSection}-active`);
+
+                        neoContentPanes.forEach(pane => {
+                            pane.classList.toggle('active', pane.id === targetSection);
+                        });
+                        
+                        if (currentSectionTitleEl) currentSectionTitleEl.innerHTML = `<span class="title-icon">${sectionIcon}</span>${sectionTitleText}`;
+                    });
+                });
+
+                function showFeedback(message, type = 'info', duration = 3500) {
+                    const container = document.getElementById('neo-toast-container');
+                    if (!container) { 
+                        if (type === 'error' || type === 'warning') alert(`${type.toUpperCase()}: ${message}`);
+                        else console.log(`Feedback (${type}): ${message}`);
+                        return;
+                    }
+                    const toast = document.createElement('div');
+                    toast.className = `neo-toast ${type}`;
+                    toast.textContent = message;
+                    container.appendChild(toast);
+                    requestAnimationFrame(() => { 
+                        requestAnimationFrame(() => { toast.classList.add('show'); });
+                    });
+                    setTimeout(() => {
+                        toast.classList.remove('show');
+                        toast.addEventListener('transitionend', () => {
+                            if (toast.parentNode === container) { container.removeChild(toast); }
+                        }, { once: true });
+                    }, duration);
+                }
+
+                function updateGenericStatus(el, message, type = 'info') { if(el) { el.textContent = message; el.className = 'status-message'; el.classList.add(type); el.style.display = 'block'; }}
+                function logGenericResult(el, message, type = 'info') { if(el) { const span = document.createElement('span'); span.textContent = message.replace(/</g, "&lt;").replace(/>/g, "&gt;"); span.classList.add(type); el.appendChild(span); el.appendChild(document.createTextNode('\n')); el.scrollTop = el.scrollHeight; }}
+                function updateGenericProgressBar(el, progress) { if(el) { const roundedProgress = Math.round(progress); el.style.width = `${roundedProgress}%`; el.textContent = `${roundedProgress}%`; }}
+                function updateGenericSummary(el, successful, failed, total, processed = null) { if(el) { let text = `📊 Summary: ${successful} successful, ${failed} failed out of ${total} total.`; if (processed !== null && processed < total) text += ` (${processed} of ${total} attempted).`; else if (processed !== null) text += ` (${processed} attempted).` ; el.textContent = text;}}
+
+
+                function updateStatus(message, type = 'info') { updateGenericStatus(statusMessageDiv, message, type); }
+                function logResult(message, type = 'info') { logGenericResult(resultsLogPre, message, type); }
+                function updateProgressBar(progress) { updateGenericProgressBar(progressBar, progress); }
+                function updateSummary(successful, failed, total) { updateGenericSummary(summaryMessageDiv, successful, failed, total, total); }
+                
+                function updateMassGoStatus(message, type = 'info') { updateGenericStatus(massGoStatusMessageDiv, message, type); }
+                function logMassGoResult(message, type = 'info') { logGenericResult(massGoResultsLogPre, message, type); }
+                function updateMassGoProgressBar(progress) { updateGenericProgressBar(massGoProgressBar, progress); }
+                function updateMassGoSummary(successful, failed, totalInList, processed) { updateGenericSummary(massGoSummaryMessageDiv, successful, failed, totalInList, processed); }
+
+
+                function formatFileSize(bytes) { if (bytes === 0) return '0 B'; const k = 1024; const sizes = ['B', 'KB', 'MB', 'GB', 'TB']; const i = Math.floor(Math.log(bytes) / Math.log(k)); return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]; }
+                function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim()); }
+                
+                // --- Local Storage for Settings ---
+                function loadStoredSettings() {
+                    settingsSenderEmailInput.value = localStorage.getItem('gmailUserEmail') || '';
+                    settingsSenderPasswordInput.value = localStorage.getItem('gmailAppPassword') || '';
+                    googleAiStudioApiKeyInput.value = localStorage.getItem('googleAiStudioApiKey') || '';
+                }
+                
+                if (saveGmailCredentialsBtn) saveGmailCredentialsBtn.addEventListener('click', () => {
+                    const email = settingsSenderEmailInput.value.trim();
+                    const pass = settingsSenderPasswordInput.value.trim();
+                    if (email && !isValidEmail(email)) {
+                        showFeedback('Invalid Gmail Email format.', 'error');
+                        return;
+                    }
+                    if (email && pass) { 
+                        localStorage.setItem('gmailUserEmail', email);
+                        localStorage.setItem('gmailAppPassword', pass);
+                        showFeedback('Primary Gmail credentials saved locally.', 'success');
+                    } else if (!email && !pass) { 
+                         localStorage.removeItem('gmailUserEmail');
+                         localStorage.removeItem('gmailAppPassword');
+                         showFeedback('Primary Gmail credentials cleared.', 'info');
+                    }
+                    else {
+                        showFeedback('Please provide both Gmail Email and App Password to save, or clear both to remove.', 'warning');
+                    }
+                });
+
+                if (saveGoogleAiStudioApiKeyBtn) saveGoogleAiStudioApiKeyBtn.addEventListener('click', () => { 
+                    const key = googleAiStudioApiKeyInput.value.trim(); 
+                    if (key) {
+                        localStorage.setItem('googleAiStudioApiKey', key);
+                        showFeedback('Google AI Studio API Key saved locally.', 'success');
+                    } else {
+                        localStorage.removeItem('googleAiStudioApiKey');
+                        showFeedback('Google AI Studio API Key cleared.', 'info');
+                    }
+                });
+
+                // --- Theme Management ---
+                const THEME_CLASSES = [
+                    "theme-dark-mode", "theme-ocean-breeze", "theme-forest-green", 
+                    "theme-royal-purple", "theme-sunset-orange", "theme-monochrome-gray",
+                    "theme-cherry-blossom", "theme-desert-sand", "theme-midnight-blue", "theme-minty-fresh"
+                ];
+
+                function applyTheme(themeName) {
+                    THEME_CLASSES.forEach(cls => document.body.classList.remove(cls));
+                    if (themeName && themeName !== 'default') {
+                        document.body.classList.add(`theme-${themeName}`);
+                    }
+                    // If it's default, no class is needed as :root styles apply
+                }
+
+                function loadAndApplySavedTheme() {
+                    const savedTheme = localStorage.getItem('selectedNeoTheme');
+                    if (savedTheme) {
+                        applyTheme(savedTheme);
+                        if (themeSelectorDropdown) themeSelectorDropdown.value = savedTheme;
+                    } else {
+                        applyTheme('default'); // Apply default if nothing saved
+                         if (themeSelectorDropdown) themeSelectorDropdown.value = 'default';
+                    }
+                }
+
+                if (saveThemeBtn && themeSelectorDropdown) {
+                    saveThemeBtn.addEventListener('click', () => {
+                        const selectedTheme = themeSelectorDropdown.value;
+                        applyTheme(selectedTheme);
+                        localStorage.setItem('selectedNeoTheme', selectedTheme);
+                        showFeedback(`Theme "${themeSelectorDropdown.options[themeSelectorDropdown.selectedIndex].text}" applied and saved.`, 'success');
+                    });
+                }
+
+
+                function renderAttachmentsListInternal(listDiv, filesArray, noItemsMsg = "No files attached yet.") {
+                    if (!listDiv) return; listDiv.innerHTML = ''; 
+                    if (filesArray.length === 0) { listDiv.innerHTML = `<p class="no-items-message">${noItemsMsg}</p>`; return; }
+                    filesArray.forEach((file, index) => {
+                        const itemDiv = document.createElement('div'); itemDiv.classList.add('attachment-item');
+                        const fileExtension = file.name.split('.').pop().toUpperCase().substring(0, 4) || 'FILE';
+                        itemDiv.innerHTML = `
+                            <div class="attachment-info" style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
+                                <div class="file-icon">${fileExtension}</div>
+                                <div class="file-details" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    <span class="file-name" title="${file.name}">${file.name}</span>
+                                    <span class="file-size" style="font-size:0.85em; color: var(--neo-text-secondary);">${formatFileSize(file.size)}</span>
+                                </div>
+                            </div>
+                            <button class="remove-attachment neo-button neo-button-danger" data-index="${index}" title="Remove ${file.name}" style="padding: 3px 8px; font-size: 0.9em;">X</button>`;
+                        listDiv.appendChild(itemDiv);
+                    });
+                    listDiv.querySelectorAll('.remove-attachment').forEach(button => {
+                        button.addEventListener('click', (event) => {
+                            const indexToRemove = parseInt(event.target.dataset.index); filesArray.splice(indexToRemove, 1); 
+                            if (listDiv.id === 'attachmentsList') renderAttachmentsList();
+                            else if (listDiv.id === 'massGoAttachmentsList') renderMassGoAttachmentsList();
+                        });
+                    });
+                }
+                function renderAttachmentsList() { renderAttachmentsListInternal(attachmentsListDiv, selectedFiles); }
+                function renderMassGoAttachmentsList() { renderAttachmentsListInternal(massGoAttachmentsListDiv, massGoSelectedFiles, "No files attached yet for MassGo."); }
+
+                function renderRecipientsListInternal(listDiv, recipientsArray, countSpan, badgeDiv, noItemsMsg = "No recipients added yet.") {
+                    if (!listDiv || !countSpan || !badgeDiv) return; listDiv.innerHTML = '';
+                    if (recipientsArray.length === 0) { listDiv.innerHTML = `<p class="no-items-message">${noItemsMsg}</p>`; } 
+                    else {
+                        recipientsArray.forEach((email, index) => {
+                            const itemDiv = document.createElement('div'); itemDiv.classList.add('recipients-list-item');
+                            itemDiv.innerHTML = `
+                                <span title="${email}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-grow:1;">${email}</span>
+                                <button data-index="${index}" class="remove-recipient-btn neo-button neo-button-danger" title="Remove ${email}" style="padding: 3px 8px; font-size: 0.9em; margin-left:10px;">X</button>`;
+                            listDiv.appendChild(itemDiv);
+                        });
+                    }
+                    countSpan.textContent = recipientsArray.length; badgeDiv.style.display = recipientsArray.length > 0 ? 'inline-block' : 'none';
+                    listDiv.querySelectorAll('.remove-recipient-btn').forEach(button => {
+                        button.addEventListener('click', (event) => {
+                            const indexToRemove = parseInt(event.target.dataset.index); recipientsArray.splice(indexToRemove, 1); 
+                            if (listDiv.id === 'recipientsList') renderRecipientsList();
+                            else if (listDiv.id === 'massGoRecipientsList') renderMassGoRecipientsList();
+                        });
+                    });
+                }
+                function renderRecipientsList() { renderRecipientsListInternal(recipientsListDiv, recipients, recipientsCountSpan, emailCountBadge); }
+                function renderMassGoRecipientsList() { renderRecipientsListInternal(massGoRecipientsListDiv, massGoRecipients, massGoRecipientsCountSpan, massGoEmailCountBadge, "No MassGo recipients added yet."); }
+
+
+                if (dropZone) dropZone.addEventListener('click', () => attachmentsInput.click());
+                if (dropZone) dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+                if (dropZone) dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+                if (dropZone) dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files, selectedFiles, renderAttachmentsList); });
+                if (attachmentsInput) attachmentsInput.addEventListener('change', (event) => { handleFiles(event.target.files, selectedFiles, renderAttachmentsList); event.target.value = null; });
+                
+                if (massGoDropZone) massGoDropZone.addEventListener('click', () => massGoAttachmentsInput.click());
+                if (massGoDropZone) massGoDropZone.addEventListener('dragover', (e) => { e.preventDefault(); massGoDropZone.classList.add('dragover'); });
+                if (massGoDropZone) massGoDropZone.addEventListener('dragleave', () => { massGoDropZone.classList.remove('dragover'); });
+                if (massGoDropZone) massGoDropZone.addEventListener('drop', (e) => { e.preventDefault(); massGoDropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files, massGoSelectedFiles, renderMassGoAttachmentsList); });
+                if (massGoAttachmentsInput) massGoAttachmentsInput.addEventListener('change', (event) => { handleFiles(event.target.files, massGoSelectedFiles, renderMassGoAttachmentsList); event.target.value = null; });
+
+                function handleFiles(files, targetArray, renderFunc) { 
+                    let newFilesAdded = 0;
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i]; if (!targetArray.some(f => f.name === file.name && f.size === file.size)) { targetArray.push(file); newFilesAdded++; }
+                    }
+                    if(newFilesAdded > 0) showFeedback(`${newFilesAdded} file(s) added.`, 'success');
+                    else if (files.length > 0) showFeedback('Selected file(s) already in list or no new files chosen.', 'info');
+                    renderFunc();
+                }
+
+                if(recipientsTabButtons) recipientsTabButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetContent = button.dataset.tabContent;
+                        recipientsTabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active');
+                        if(recipientsTabContents) recipientsTabContents.forEach(content => content.classList.toggle('active', content.id === targetContent));
+                    });
+                });
+                if(massGoRecipientsTabButtons) massGoRecipientsTabButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetContent = button.dataset.tabContent;
+                        massGoRecipientsTabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active');
+                        if(massGoRecipientsTabContents) massGoRecipientsTabContents.forEach(content => content.classList.toggle('active', content.id === targetContent));
+                    });
+                });
+                
+                function addManualEmailsInternal(textarea, recipientsArray, renderFunc) {
+                    if (!textarea) return; const emailsText = textarea.value.trim();
+                    if (emailsText) {
+                        const rawEmails = emailsText.split(/[\n,; ]+/); let addedCount = 0; let invalidCount = 0; let duplicateCount = 0;
+                        rawEmails.forEach(rawEmail => { const email = rawEmail.trim(); if (!email) return; if (isValidEmail(email)) { if (!recipientsArray.includes(email)) { recipientsArray.push(email); addedCount++; } else { duplicateCount++; } } else { invalidCount++; } });
+                        let feedbackMsg = ""; if (addedCount > 0) feedbackMsg += `Added ${addedCount} new email(s). `; if (duplicateCount > 0) feedbackMsg += `${duplicateCount} duplicate(s) ignored. `; if (invalidCount > 0) feedbackMsg += `${invalidCount} invalid entry/ies ignored.`;
+                        if (feedbackMsg) showFeedback(feedbackMsg.trim(), addedCount > 0 ? 'success' : 'info' ); else showFeedback('No valid new email addresses to add.', 'info');
+                        if (addedCount > 0) textarea.value = ''; renderFunc();
+                    } else { showFeedback('Please enter email addresses.', 'warning'); }
+                }
+                if (addManualEmailsBtn) addManualEmailsBtn.addEventListener('click', () => addManualEmailsInternal(recipientsManualTextarea, recipients, renderRecipientsList));
+                if (addMassGoManualEmailsBtn) addMassGoManualEmailsBtn.addEventListener('click', () => addManualEmailsInternal(massGoRecipientsManualTextarea, massGoRecipients, renderMassGoRecipientsList));
+                
+                async function parseFileForEmailsInternal(file, recipientsArray, renderFunc) {
+                    try {
+                        const fileContent = await file.text(); let parsedEmails = fileContent.split(/[\n,; ]+/).map(e => e.trim());
+                        let addedCount = 0; let invalidCount = 0; let duplicateCount = 0;
+                        parsedEmails.forEach(email => { if(!email) return; if (isValidEmail(email)) { if (!recipientsArray.includes(email)) { recipientsArray.push(email); addedCount++; } else { duplicateCount++; } } else { invalidCount++; } });
+                        let feedbackMsg = ""; if (addedCount > 0) feedbackMsg += `Added ${addedCount} new email(s) from ${file.name}. `; if (duplicateCount > 0) feedbackMsg += `${duplicateCount} duplicate(s) ignored. `; if (invalidCount > 0) feedbackMsg += `${invalidCount} invalid entry/ies ignored.`;
+                        if(feedbackMsg) showFeedback(feedbackMsg.trim(), addedCount > 0 ? 'success' : 'info'); else showFeedback(`No new valid email addresses found in ${file.name}.`, 'info');
+                        renderFunc();
+                    } catch (error) { showFeedback(`Error reading ${file.name}: ${error.message}`, 'error'); console.error(`Error reading ${file.name}:`, error); }
+                }
+                function loadRecipientsFile(fileType, recipientsArray, renderFunc) {
+                    const input = document.createElement('input'); input.type = 'file'; input.accept = fileType === 'txt' ? '.txt,text/plain' : '.csv,text/csv';
+                    input.onchange = async (event) => { const file = event.target.files[0]; if (file) parseFileForEmailsInternal(file, recipientsArray, renderFunc); event.target.value = null; };
+                    input.click();
+                }
+                if (loadTxtBtn) loadTxtBtn.addEventListener('click', () => loadRecipientsFile('txt', recipients, renderRecipientsList));
+                if (loadCsvBtn) loadCsvBtn.addEventListener('click', () => loadRecipientsFile('csv', recipients, renderRecipientsList));
+                if (loadMassGoTxtBtn) loadMassGoTxtBtn.addEventListener('click', () => loadRecipientsFile('txt', massGoRecipients, renderMassGoRecipientsList));
+                if (loadMassGoCsvBtn) loadMassGoCsvBtn.addEventListener('click', () => loadRecipientsFile('csv', massGoRecipients, renderMassGoRecipientsList));
+
+                if (clearRecipientsBtn) clearRecipientsBtn.addEventListener('click', () => { if (recipients.length === 0) { showFeedback('Recipient list is already empty.', 'info'); return; } if (confirm('Clear all recipients?')) { recipients = []; renderRecipientsList(); showFeedback('All recipients cleared.', 'success'); } });
+                if (clearMassGoRecipientsBtn) clearMassGoRecipientsBtn.addEventListener('click', () => { if (massGoRecipients.length === 0) { showFeedback('MassGo recipient list is already empty.', 'info'); return; } if (confirm('Clear all MassGo recipients?')) { massGoRecipients = []; renderMassGoRecipientsList(); showFeedback('All MassGo recipients cleared.', 'success'); } });
+
+                if (massGoAppPasswordsFileBtn) massGoAppPasswordsFileBtn.addEventListener('click', () => massGoAppPasswordsFileInput.click());
+                massGoAppPasswordsFileInput.addEventListener('change', async (event) => {
+                    const file = event.target.files[0]; if (!file) return;
+                    try { const text = await file.text(); massGoAppPasswords = text.split('\n').map(p => p.trim()).filter(p => p); if(massGoAppPasswordsCountDiv) {massGoAppPasswordsCountDiv.textContent = `${massGoAppPasswords.length} passwords loaded.`; massGoAppPasswordsCountDiv.style.display = 'block';} showFeedback(`${massGoAppPasswords.length} app passwords loaded.`, 'success'); } 
+                    catch (e) { showFeedback('Error reading app passwords file.', 'error'); massGoAppPasswords = []; if(massGoAppPasswordsCountDiv) massGoAppPasswordsCountDiv.style.display = 'none'; }
+                    event.target.value = null;
+                });
+                if (massGoSenderEmailsFileBtn) massGoSenderEmailsFileBtn.addEventListener('click', () => massGoSenderEmailsFileInput.click());
+                massGoSenderEmailsFileInput.addEventListener('change', async (event) => {
+                    const file = event.target.files[0]; if (!file) return;
+                    try { const text = await file.text(); massGoSenderEmails = text.split('\n').map(e => e.trim()).filter(e => isValidEmail(e)); if(massGoSenderEmailsCountDiv){massGoSenderEmailsCountDiv.textContent = `${massGoSenderEmails.length} sender emails loaded.`; massGoSenderEmailsCountDiv.style.display = 'block';} showFeedback(`${massGoSenderEmails.length} sender emails loaded.`, 'success'); } 
+                    catch (e) { showFeedback('Error reading sender emails file.', 'error'); massGoSenderEmails = []; if(massGoSenderEmailsCountDiv) massGoSenderEmailsCountDiv.style.display = 'none'; }
+                    event.target.value = null;
+                });
+
+                if(massGoTransferRecipientsBtn) massGoTransferRecipientsBtn.addEventListener('click', () => {
+                    if (recipients.length === 0) { showFeedback('Main recipient list is empty. Nothing to transfer.', 'info'); return; }
+                    const initialMassGoCount = massGoRecipients.length;
+                    massGoRecipients = [...new Set([...massGoRecipients, ...recipients])]; 
+                    const addedCount = massGoRecipients.length - initialMassGoCount;
+                    renderMassGoRecipientsList();
+                    showFeedback(`${addedCount > 0 ? addedCount : 'No new'} unique recipient(s) transferred/merged. Total MassGo recipients: ${massGoRecipients.length}.`, 'success');
+                });
+
+                if (sendEmailsBtn) sendEmailsBtn.addEventListener('click', async () => {
+                    if (sendingActive) { showFeedback('A sending process is already active.', 'warning'); return; }
+                    stopRequested = false; 
+                    const senderNameVal = senderNameInput.value.trim();
+                    const emailSubjectVal = emailSubjectInput.value.trim();
+                    const emailBodyHTML = quill.root.innerHTML;
+                    
+                    const senderEmailAccountVal = localStorage.getItem('gmailUserEmail');
+                    const senderAppPasswordVal = localStorage.getItem('gmailAppPassword');
+
+                    if (!senderEmailAccountVal || !senderAppPasswordVal) {
+                        showFeedback('Primary Gmail Email or App Password not set in Settings. Please configure them.', 'error');
+                        document.querySelector('.neo-nav-button[data-section=\'settings\']').click(); // Navigate to settings
+                        return;
+                    }
+                    if (!senderNameVal || !emailSubjectVal || (!emailBodyHTML || emailBodyHTML === "<p><br></p>" || quill.getText().trim().length === 0) || recipients.length === 0) {
+                        showFeedback('Please fill all required fields: Name, Subject, Body, and add Recipients.', 'error'); return;
+                    }
+                    if (!confirm(`Send email "${emailSubjectVal}" to ${recipients.length} recipient(s) from ${senderEmailAccountVal}?`)) return;
+
+                    sendingActive = true; sendEmailsBtn.disabled = true; stopSendingBtn.disabled = false;
+                    if(resultsLogPre) resultsLogPre.textContent = ''; updateProgressBar(0); updateSummary(0, 0, recipients.length);
+                    updateStatus("Initiating send...", 'info'); logResult("🚀 Starting email sending process...", 'info');
+                    
+                    const formData = new FormData(); 
+                    formData.append('sender_name', senderNameVal); 
+                    formData.append('sender_email_account', senderEmailAccountVal); 
+                    formData.append('sender_app_password', senderAppPasswordVal); 
+                    formData.append('email_subject', emailSubjectVal);
+                    formData.append('recipients', recipients.join(','));  formData.append('email_body_html', emailBodyHTML);
+                    for (const file of selectedFiles) { formData.append('attachments', file, file.name); }
+                    
+                    try {
+                        const response = await fetch('/send_emails', { method: 'POST', body: formData });
+                        if (stopRequested) { logResult("ℹ️ Sending interrupted by user.", "warning"); updateStatus("STOP REQUESTED.", 'warning'); } 
+                        else {
+                            const data = await response.json();
+                            if (response.ok) { updateStatus(`Process completed. ${data.successful} sent, ${data.failed} failed.`, 'success'); if(data.results) data.results.forEach(r => logResult(r, r.startsWith("✅") ? 'success' : 'error')); updateSummary(data.successful, data.failed, data.total); } 
+                            else { updateStatus(`SERVER ERROR: ${data.message || 'Unknown error.'}`, 'error'); if(data.results) data.results.forEach(r => logResult(r, 'error')); else if(data.message) logResult(`❌ Server: ${data.message}`, 'error'); updateSummary(0, data.total || recipients.length, data.total || recipients.length); }
+                        }
+                    } catch (error) { if (!stopRequested) updateStatus(`NETWORK/SERVER ERROR.`, 'error'); logResult(`❌ NETWORK ERROR: ${error.message}.`, 'error'); updateSummary(0, recipients.length, recipients.length); } 
+                    finally { if (!stopRequested) updateProgressBar(100); sendingActive = false; sendEmailsBtn.disabled = false; stopSendingBtn.disabled = true; stopRequested = false; logResult("🏁 Frontend sending process finished.", 'info'); }
+                });
+                if (stopSendingBtn) stopSendingBtn.addEventListener('click', () => { if (!sendingActive) return; stopRequested = true; sendingActive = false; sendEmailsBtn.disabled = false; stopSendingBtn.disabled = true; updateStatus("STOP REQUESTED. Backend may finish current batch.", 'warning'); logResult("⚠️ User requested stop.", 'warning'); showFeedback("Stop request sent.", "info"); updateProgressBar(0); });
+
+                if (initiateMassGoSendBtn) initiateMassGoSendBtn.addEventListener('click', async () => {
+                    if (massGoSendingActive) { showFeedback('MassGo process already active.', 'warning'); return; }
+                    massGoStopRequested = false;
+                    const campaignSenderNameVal = massGoCampaignSenderNameInput.value.trim();
+                    const emailSubjectVal = massGoEmailSubjectInput.value.trim();
+                    const emailBodyHTML = massGoQuill.root.innerHTML;
+
+                    if (!campaignSenderNameVal) { showFeedback('Campaign Sender Name is required for MassGo.', 'error'); massGoCampaignSenderNameInput.focus(); return; }
+                    if (massGoAppPasswords.length === 0) { showFeedback('App Passwords list is empty for MassGo.', 'error'); if(massGoAppPasswordsFileBtn) massGoAppPasswordsFileBtn.focus(); return; }
+                    if (massGoSenderEmails.length === 0) { showFeedback('Sender Emails list is empty for MassGo.', 'error'); if(massGoSenderEmailsFileBtn) massGoSenderEmailsFileBtn.focus(); return; }
+                    if (massGoAppPasswords.length !== massGoSenderEmails.length) { showFeedback('Mismatch: App Passwords count must equal Sender Emails count for MassGo.', 'error'); return; }
+                    if (!emailSubjectVal) { showFeedback('Email Subject is required for MassGo.', 'error'); massGoEmailSubjectInput.focus(); return; }
+                    if (!emailBodyHTML || emailBodyHTML === "<p><br></p>" || massGoQuill.getText().trim().length === 0) { showFeedback('Email Content cannot be empty for MassGo.', 'error'); massGoQuill.focus(); return; }
+                    if (massGoRecipients.length === 0) { showFeedback('Please add recipients for MassGo.', 'error'); return; }
+                    
+                    if (!confirm(`Initiate MassGo campaign "${emailSubjectVal}" to ${massGoRecipients.length} recipient(s) using ${massGoSenderEmails.length} sender account(s)?\nEach account will attempt to send up to ${massGoAppPasswords.length > 0 ? Math.ceil(massGoRecipients.length / massGoAppPasswords.length) : 0} emails (max 480 per account).`)) return;
+
+                    massGoSendingActive = true; initiateMassGoSendBtn.disabled = true; stopMassGoBtn.disabled = false;
+                    if(massGoResultsLogPre) massGoResultsLogPre.textContent = ''; updateMassGoProgressBar(0); updateMassGoSummary(0, 0, massGoRecipients.length, 0);
+                    updateMassGoStatus("Initiating MassGo campaign...", 'info'); logMassGoResult("🚀 Starting MassGo campaign process...", 'info');
+                    
+                    const formData = new FormData();
+                    formData.append('campaign_sender_name', campaignSenderNameVal);
+                    formData.append('app_passwords_list', JSON.stringify(massGoAppPasswords));
+                    formData.append('sender_emails_list', JSON.stringify(massGoSenderEmails));
+                    formData.append('email_subject', emailSubjectVal);
+                    formData.append('recipients', JSON.stringify(massGoRecipients)); 
+                    formData.append('email_body_html', emailBodyHTML);
+                    for (const file of massGoSelectedFiles) { formData.append('attachments', file, file.name); }
+                    
+                    try {
+                        const response = await fetch('/send_massgo_emails', { method: 'POST', body: formData });
+                        let data = {};
+                        try { data = await response.json(); } catch (jsonErr) { data = { message: "Invalid JSON response from server.", results: [`❌ Server Error: Non-JSON response. Status: ${response.status}`]}; response.ok = false; }
+
+
+                        if (massGoStopRequested) { logMassGoResult("ℹ️ MassGo campaign interrupted by user.", "warning"); updateMassGoStatus("MASSGO STOP REQUESTED.", 'warning'); } 
+                        else {
+                            if (response.ok) {
+                                updateMassGoStatus(data.message || "Campaign update received.", 'success');
+                                if(data.results) data.results.forEach(r => logMassGoResult(r, r.startsWith("✅") ? 'success' : (r.startsWith("⚠️") ? 'warning' : 'error')));
+                                updateMassGoSummary(data.successful || 0, data.failed || 0, data.total_recipients_in_list || massGoRecipients.length, data.recipients_processed || 0);
+                            } else {
+                                updateMassGoStatus(`MASSGO SERVER ERROR: ${data.message || 'Unknown error.'}`, 'error');
+                                if(data.results && data.results.length > 0) data.results.forEach(r => logMassGoResult(r, 'error'));
+                                else if (data.message) logMassGoResult(`❌ MassGo Server: ${data.message}`, 'error');
+                                updateMassGoSummary(0, data.total_recipients_in_list || massGoRecipients.length, data.total_recipients_in_list || massGoRecipients.length, 0);
+                            }
+                        }
+                    } catch (error) {
+                        if (!massGoStopRequested) updateMassGoStatus(`MASSGO NETWORK/SERVER ERROR.`, 'error');
+                        logMassGoResult(`❌ MASSGO NETWORK ERROR: ${error.message}.`, 'error');
+                        updateMassGoSummary(0, massGoRecipients.length, massGoRecipients.length, 0);
+                    } finally {
+                        if (!massGoStopRequested) updateMassGoProgressBar(100); 
+                        massGoSendingActive = false; initiateMassGoSendBtn.disabled = false; stopMassGoBtn.disabled = true;
+                        massGoStopRequested = false; 
+                        logMassGoResult("🏁 MassGo campaign (frontend perspective) finished.", 'info');
+                    }
+                });
+                if (stopMassGoBtn) stopMassGoBtn.addEventListener('click', () => { 
+                    if (!massGoSendingActive) { showFeedback("No active MassGo process to stop.", "info"); return; }
+                    massGoStopRequested = true; massGoSendingActive = false; 
+                    initiateMassGoSendBtn.disabled = false; stopMassGoBtn.disabled = true;
+                    updateMassGoStatus("MASSGO STOP REQUESTED. Backend may take time to halt.", 'warning');
+                    logMassGoResult("⚠️ User requested MassGo stop. Server will attempt to halt gracefully.", 'warning');
+                    showFeedback("MassGo stop request acknowledged.", "info");
+                    updateMassGoProgressBar(0); 
+                });
+
+                if (extractEmailsBtn) extractEmailsBtn.addEventListener('click', () => {
+                    const text = textToExtractEmails.value; copyExtractedEmailsBtn.style.display = 'none';
+                    if (extractedEmailsCountBadge) extractedEmailsCountBadge.style.display = 'none';
+                    if (!text.trim()) { extractedEmailsOutput.textContent = 'Please paste some text first.'; extractedEmailsOutput.style.color = 'var(--neo-text-tertiary)'; return; }
+                    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g; const foundEmails = text.match(emailRegex);
+                    if (foundEmails && foundEmails.length > 0) {
+                        const uniqueEmails = [...new Set(foundEmails.map(email => email.toLowerCase()))];
+                        extractedEmailsOutput.textContent = uniqueEmails.join('\n'); extractedEmailsOutput.style.color = 'var(--neo-text-primary)';
+                        copyExtractedEmailsBtn.style.display = 'inline-flex';
+                        if (extractedEmailsCountBadge) { extractedEmailsCountBadge.textContent = uniqueEmails.length; extractedEmailsCountBadge.style.display = 'inline-block'; }
+                        showFeedback(`Extracted ${uniqueEmails.length} unique email(s).`, 'success');
+                    } else { extractedEmailsOutput.textContent = 'No email addresses found.'; extractedEmailsOutput.style.color = 'var(--neo-text-secondary)'; if (extractedEmailsCountBadge) extractedEmailsCountBadge.style.display = 'none'; showFeedback('No emails found.', 'info'); }
+                });
+                if (generateDorkBtn) generateDorkBtn.addEventListener('click', () => {
+                    let dorkParts = []; const keywords = dorkKeywordsInput.value.trim(); const site = dorkSiteInput.value.trim();
+                    const filetype = dorkFiletypeSelect.value; const intext = dorkIntextInput.value.trim();
+                    const intitle = dorkIntitleInput.value.trim(); const emailProvider = dorkEmailProviderInput.value.trim();
+                    copyDorkBtn.style.display = 'none';
+                    if (keywords) dorkParts.push(`"${keywords}"`); if (site) dorkParts.push(`site:${site}`);
+                    if (filetype) dorkParts.push(`filetype:${filetype}`); if (intext) dorkParts.push(`intext:"${intext}"`);
+                    if (intitle) dorkParts.push(`intitle:"${intitle}"`);
+                    let emailPatterns = [];
+                    if (emailProvider) { const providers = emailProvider.split(',').map(p => p.trim()).filter(p => p); if (providers.length > 0) { emailPatterns.push("(" + providers.map(p => `intext:"@${p}"`).join(" OR ") + ")"); }}
+                    else if (keywords || site || intext || intitle) { emailPatterns.push(`(intext:"@gmail.com" OR intext:"@yahoo.com" OR intext:"@outlook.com" OR intext:"contact" OR intext:"email")`); }
+                    if (emailPatterns.length > 0) dorkParts.push(emailPatterns.join(" "));
+                    const finalDork = dorkParts.join(" ").trim();
+                    if (finalDork) { generatedDorkOutput.textContent = finalDork; generatedDorkOutput.style.color = 'var(--neo-text-primary)'; copyDorkBtn.style.display = 'inline-flex'; }
+                    else { generatedDorkOutput.textContent = 'Provide criteria to generate a dork.'; generatedDorkOutput.style.color = 'var(--neo-text-secondary)'; }
+                });
+
+                function copyToClipboardHandler(textProviderFunc, buttonElement, successMessage) {
+                    const textToCopy = textProviderFunc();
+                    if (!textToCopy || textToCopy.trim() === "" || textToCopy.startsWith("No ") || textToCopy.startsWith("Dork will") || textToCopy.startsWith("Please paste")) { showFeedback('Nothing to copy yet.', 'info'); return; }
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        const originalText = buttonElement.innerHTML; const originalClass = buttonElement.className;
+                        buttonElement.innerHTML = '✅ Copied!'; buttonElement.classList.add('copied'); buttonElement.disabled = true;
+                        setTimeout(() => { buttonElement.innerHTML = originalText; buttonElement.className = originalClass; buttonElement.disabled = false; }, 2000);
+                        showFeedback(successMessage || 'Content copied!', 'success');
+                    }).catch(err => { showFeedback('Failed to copy.', 'error'); console.error("Copy error:", err);});
+                }
+                if (copyExtractedEmailsBtn) copyExtractedEmailsBtn.addEventListener('click', () => copyToClipboardHandler(() => extractedEmailsOutput.textContent, copyExtractedEmailsBtn, 'Extracted emails copied!'));
+                if (copyDorkBtn) copyDorkBtn.addEventListener('click', () => copyToClipboardHandler(() => generatedDorkOutput.textContent, copyDorkBtn, 'Dork copied!'));
+                
+
+                // --- AI Writer Functionality ---
+                if (aiWriteAssistantBtn) aiWriteAssistantBtn.addEventListener('click', () => {
+                    const aiApiKey = localStorage.getItem('googleAiStudioApiKey');
+                    if (!aiApiKey) {
+                        showFeedback('Google AI Studio API Key not set. Please configure it in Settings.', 'error');
+                        document.querySelector('.neo-nav-button[data-section=\'settings\']').click();
+                        return;
+                    }
+                    aiWriterPrompt.value = '';
+                    aiGeneratedTextContent = '';
+                    aiWriterStatus.style.display = 'none';
+                    aiInsertBtn.style.display = 'none';
+                    aiWriterModal.style.display = 'flex';
+                    aiWriterPrompt.focus();
+                });
+                if (aiCloseModalBtn) aiCloseModalBtn.addEventListener('click', () => aiWriterModal.style.display = 'none');
+                if (aiGenerateBtn) aiGenerateBtn.addEventListener('click', async () => {
+                    const prompt = aiWriterPrompt.value.trim();
+                    const apiKey = localStorage.getItem('googleAiStudioApiKey'); 
+                    if (!apiKey) { 
+                        showFeedback('Google AI Studio API Key is not set. Please configure it in Settings.', 'error');
+                        aiWriterStatus.textContent = 'API KEY MISSING.'; aiWriterStatus.className = 'status-message error'; aiWriterStatus.style.display = 'block';
+                        return;
+                    }
+                    if (!prompt) {
+                        showFeedback('Please enter a prompt for the AI.', 'warning');
+                        aiWriterStatus.textContent = 'PROMPT IS EMPTY.'; aiWriterStatus.className = 'status-message warning'; aiWriterStatus.style.display = 'block';
+                        return;
+                    }
+                    aiWriterStatus.textContent = 'GENERATING...'; aiWriterStatus.className = 'status-message info'; aiWriterStatus.style.display = 'block';
+                    aiGenerateBtn.disabled = true; aiInsertBtn.style.display = 'none';
+                    try {
+                        const response = await fetch('/api/ai_generate', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ api_key: apiKey, prompt: prompt })
+                        });
+                        const data = await response.json();
+                        if (response.ok && data.generated_text !== undefined) {
+                            aiGeneratedTextContent = data.generated_text;
+                            aiWriterPrompt.value = aiGeneratedTextContent; 
+                            aiWriterStatus.textContent = 'GENERATION COMPLETE. Review and insert.'; aiWriterStatus.className = 'status-message success';
+                            aiInsertBtn.style.display = 'inline-flex';
+                        } else {
+                            aiWriterStatus.textContent = data.error || 'Failed to generate text.'; aiWriterStatus.className = 'status-message error';
+                            showFeedback(data.error || 'AI generation failed.', 'error');
+                        }
+                    } catch (error) {
+                        aiWriterStatus.textContent = `NETWORK ERROR: ${error.message}`; aiWriterStatus.className = 'status-message error';
+                        showFeedback(`AI Network Error: ${error.message}`, 'error');
+                    } finally {
+                        aiGenerateBtn.disabled = false;
+                    }
+                });
+                if (aiInsertBtn) aiInsertBtn.addEventListener('click', () => {
+                    if (aiGeneratedTextContent) {
+                        quill.focus(); 
+                        const currentSelection = quill.getSelection(true); 
+                        if (currentSelection) {
+                            quill.insertText(currentSelection.index, aiGeneratedTextContent + '\n\n', Quill.sources.USER);
+                            quill.setSelection(currentSelection.index + aiGeneratedTextContent.length + 2);
+                        } else { 
+                            quill.insertText(quill.getLength(), aiGeneratedTextContent + '\n\n', Quill.sources.USER);
+                            quill.setSelection(quill.getLength());
+                        }
+                        showFeedback('AI content inserted into editor.', 'success');
+                        aiWriterModal.style.display = 'none';
+                    } else {
+                        showFeedback('No AI content to insert.', 'warning');
+                    }
+                });
+
+                initializeAppStartup();
+            } catch (err) {
+                console.error("Error in DOMContentLoaded handler:", err);
+                const loader = document.getElementById('initial-loader');
+                if (loader) loader.innerHTML = `<p style="color:red;">A critical error occurred initializing the app. Please check the browser console (F12) for details.</p>`;
+                else alert("A critical error occurred. Check console.");
             }
-
-            if (copyExtractedEmailsBtn) copyExtractedEmailsBtn.addEventListener('click', () => copyToClipboardHandler(() => extractedEmailsOutput.textContent, copyExtractedEmailsBtn, 'Extracted emails copied!'));
-            if (copyDorkBtn) copyDorkBtn.addEventListener('click', () => copyToClipboardHandler(() => generatedDorkOutput.textContent, copyDorkBtn, 'Dork copied!'));
-
-            initializeAppStartup();
         });
+    } catch (globalErr) {
+        console.error("Global JavaScript error:", globalErr);
+        alert("A global JavaScript error occurred. The app might not function correctly. Check console.");
+    }
     </script>
 </body>
 </html>
